@@ -1,0 +1,8 @@
+app:
+  name: kakaopay-pretest-2
+  description: Kakaopay Pretest 2 Server
+
+spring:
+  datasource:
+    initialize: false
+

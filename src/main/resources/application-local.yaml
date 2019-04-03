@@ -1,0 +1,5 @@
+server:
+  port: 10080
+  server-header: Local Kakaopay Pretest 2 Server
+  filter:
+    cors: true
