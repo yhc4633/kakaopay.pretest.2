@@ -7,6 +7,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+/**
+ * [local build 시]
+ * Arguments
+ * -Pprofile=local
+ *
+ * [local 실행 시]
+ * VM Options
+ * -Dspring.profiles.active=local
+ *
+ * Program Arguments
+ * --spring.profiles.active=local
+ */
+
 @Slf4j
 @Aspect
 @EnableAspectJAutoProxy
