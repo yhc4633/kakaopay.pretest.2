@@ -1,0 +1,119 @@
+apply plugin: 'java'        // jar 사용
+apply plugin: 'application' // mainClassName 을 지정을 위해 사용
+apply plugin: 'org.springframework.boot' // spring-boot 구동 시 필요한 구성을 위해 사용
+
+group 'com.kakaopay.pretest'
+version '1.0.0'
+description = 'Kakaopay Pretest 2'
+mainClassName = 'com.kakaopay.pretest.StartApplicationServer'
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.name
+        attributes 'Implementation-Version': version
+        attributes 'description': 'Kakaopay Pretest 2 Server'
+        attributes 'Timestamp': getCurrentTimestamp()
+    }
+
+    archiveName 'kakaopay_pretest_2.jar'
+}
+
+// distZip, distTar 해서 나온 결과물을 사용하지 않기 때문에 삭제
+[distZip, distTar].each { task ->
+    configurations.archives.artifacts.removeAll
+            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+    task.enabled = false
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile('org.springframework.boot:spring-boot-starter:1.5.15.RELEASE') {
+        exclude(module: 'commons-logging')
+    }
+
+    // spring module
+    compile 'org.springframework.boot:spring-boot-starter-web:1.5.15.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-aop:1.5.15.RELEASE'
+    compile 'org.springframework.boot:spring-boot-configuration-processor:1.5.15.RELEASE'
+
+    // etc module
+    compile 'org.projectlombok:lombok:1.18.2'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.8'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.8'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.15.RELEASE"
+    }
+}
+
+// 현재 시간을 가져오는 함수
+def getCurrentTimestamp() {
+    def date = new Date()
+    return date.format('yyyy-MM-dd HH:mm:ss')
+}
+
+final String DEFAULT_PROFILE = 'local' // -Pprofile 옵션 없을 시 사용하는 default 값
+
+if ((false == project.hasProperty('profile')) || (null == profile)) {
+    ext.profile = DEFAULT_PROFILE
+}
+
+ext {
+    resourceDir = "src/main/resources"
+    logbackPath = "-Dlogging.config=logback-${profile.split(",")[0]}.xml"
+    encoding = "-Dfile.encoding=MS949"
+    jmx = "-Dcom.sun.management.jmxremote.port=10992 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+    gc = "-XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods"
+    gclog = "-Xloggc:./logs/gc/gc.log -XX:+PrintGCDateStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=1024K"
+    heapdump = "-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./logs/heapdump.hprof"
+    memory = "-Xms2048m -Xmx2048m -XX:PermSize=64m -XX:MaxPermSize=128m"
+    activeProfile = "-Dspring.profiles.active=${profile}"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir "${resourceDir}"
+            exclude "*.xml"
+        }
+    }
+}
+
+compileJava.doLast {
+    // 실행 스크립트 생성
+    println ':create script files'
+
+    def script = file("${buildDir}/libs")
+
+    script.mkdirs()
+    def shScript = new File(script, "start-kakaopay_prestest_2.sh")
+
+    shScript.text = "exec -a ${rootProject.name} java -d64 -server ${logbackPath} ${encoding} ${jmx} ${gc} ${gclog} ${heapdump} ${memory} ${activeProfile} -jar ${rootProject.name}.jar"
+
+    // 설정 파일 복사
+    println ':copy config file'
+
+    copy {
+        from "${resourceDir}/logging/logback-${profile.split(',')[0]}.xml"
+        into "build/libs"
+        jar.manifest.writeTo("${buildDir}/libs/${profile}-kakaopay_prestest_2-${rootProject.version}.MF")
+    }
+}
+
+bootRun {
+    systemProperty "spring.profiles.active", "${profile}"
+}
