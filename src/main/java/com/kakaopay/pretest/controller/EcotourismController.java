@@ -21,7 +21,7 @@ public class EcotourismController {
     @Qualifier("ecotourismService")
     private final TourService ecotourismService;
 
-    @PostMapping(value = "/register/file", produces = "text/csv")
+    @PostMapping(value = "/register/file")
     public ProcessResultResponse registerEcotourismFile(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                         @RequestParam MultipartFile ecotourismFile) {
 
