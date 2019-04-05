@@ -6,3 +6,12 @@ server:
 
 logging:
   config: classpath:logging/logback-local.xml
+
+  h2:
+    console:
+      enabled: true
+
+spring:
+  h2:
+    console:
+      enabled: true

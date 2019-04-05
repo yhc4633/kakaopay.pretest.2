@@ -40,6 +40,7 @@ dependencies {
     // spring module
     compile 'org.springframework.boot:spring-boot-starter-web:1.5.19.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-aop:1.5.19.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-test:1.5.19.RELEASE'
     compile 'org.springframework.boot:spring-boot-configuration-processor:1.5.19.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.19.RELEASE'
 

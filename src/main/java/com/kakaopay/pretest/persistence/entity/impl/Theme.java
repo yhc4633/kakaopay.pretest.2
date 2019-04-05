@@ -9,6 +9,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "theme")
 public class Theme implements CommonEntity {
+    public Theme(String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long themeCode;
