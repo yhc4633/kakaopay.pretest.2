@@ -19,7 +19,7 @@ public class EcotourismRepositoryCustom implements CommonProcess<Ecotourism> {
             return null;
         }
 
-        Ecotourism searchedEcotourism = ecotourismRepository.findEcotourismByRegionCodeAndThemeCodeAndAndProgramCode(ecotourism.getRegionCode(), ecotourism.getThemeCode(), ecotourism.getProgramCode());
+        Ecotourism searchedEcotourism = ecotourismRepository.findEcotourismByRegionAndThemeAndProgram(ecotourism.getRegion(), ecotourism.getTheme(), ecotourism.getProgram());
 
         if (searchedEcotourism != null) {
             return searchedEcotourism;

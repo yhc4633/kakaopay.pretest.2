@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RegionRepository extends JpaRepository<Region, Long> {
-    Region findRegionByDohAndSiAndGoonAndGuAndMyunAndRiAnAndEubAndEtc(String doh, String si, String goon, String gu, String myun, String ri, String eub, String etc);
+    Region findRegionByDohAndSiAndGoonAndGuAndMyunAndRiAndEubAndDongAndEtc(String doh, String si, String goon, String gu, String myun, String ri, String eub, String dong, String etc);
 }

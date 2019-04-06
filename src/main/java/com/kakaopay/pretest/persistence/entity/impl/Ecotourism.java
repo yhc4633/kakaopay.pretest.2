@@ -2,28 +2,36 @@ package com.kakaopay.pretest.persistence.entity.impl;
 
 import com.kakaopay.pretest.persistence.entity.CommonEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name = "ecotourism")
+@NoArgsConstructor
 public class Ecotourism implements CommonEntity {
+    public Ecotourism(Region region, Theme theme, Program program) {
+        this.region = region;
+        this.theme = theme;
+        this.program = program;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ecotourismCode;
 
     @ManyToOne(targetEntity = Region.class)
     @JoinColumn(name ="region_code")
-    private Long regionCode;
+    private Region region;
 
     @ManyToOne(targetEntity = Theme.class)
     @JoinColumn(name ="theme_code")
-    private Long themeCode;
+    private Theme theme;
 
     @ManyToOne(targetEntity = Program.class)
     @JoinColumn(name ="program_code")
-    private Long programCode;
+    private Program program;
 
     @Override
     public String getPublicIdentifyCode() {

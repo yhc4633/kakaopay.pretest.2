@@ -1,9 +1,11 @@
 package com.kakaopay.pretest.service.impl;
 
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
+import com.kakaopay.pretest.persistence.entity.impl.Program;
 import com.kakaopay.pretest.persistence.entity.impl.Region;
 import com.kakaopay.pretest.persistence.entity.impl.Theme;
 import com.kakaopay.pretest.persistence.repository.custom.EcotourismRepositoryCustom;
+import com.kakaopay.pretest.persistence.repository.custom.ProgramRepositoryCustom;
 import com.kakaopay.pretest.persistence.repository.custom.RegionRepositoryCustom;
 import com.kakaopay.pretest.persistence.repository.custom.ThemeRepositoryCustom;
 import com.kakaopay.pretest.service.TourService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.kakaopay.pretest.constants.ParameterCode.*;
@@ -29,62 +32,60 @@ public class EcotourismServiceImpl implements TourService {
     private final EcotourismRepositoryCustom ecotourismRepositoryCustom;
     private final RegionRepositoryCustom regionRepositoryCustom;
     private final ThemeRepositoryCustom themeRepositoryCustom;
+    private final ProgramRepositoryCustom programRepositoryCustom;
 
     @Override
-    public boolean uploadFile(MultipartFile ecotourismFile) {
+    public List<String> uploadFile(MultipartFile ecotourismFile) {
         if (ecotourismFile == null) {
             log.error("ecotourism file is null");
-            return false;
+            return null;
         }
 
+        List<String> uploadFailedTourNoList = new ArrayList<>();
+
         try {
-            InputStreamReader is = new InputStreamReader(ecotourismFile.getInputStream(), "EUC-KR");
-            CSVReader reader = new CSVReader(is);
-            List<String[]> list = reader.readAll();
+            InputStreamReader inputStreamReader = new InputStreamReader(ecotourismFile.getInputStream(), "EUC-KR");
+            CSVReader csvReader = new CSVReader(inputStreamReader);
+            List<String[]> ecotourismList = csvReader.readAll();
+            ecotourismList.remove(COLUMN_NAME_INDEX);
 
-            for (String[] str : list){
-                String data = "";
-                for (String s : str){
-                    data = data + s + " ";
+            for (String[] ecotourismArr : ecotourismList){
+                if (addTour(ecotourismArr) == false) {
+                    uploadFailedTourNoList.add(ecotourismArr[TOUR_INFO_ARR_NUMBER_INDEX]);
                 }
-                log.info(data);
             }
-            return true;
+            return uploadFailedTourNoList;
         } catch (Exception e) {
-
-            return false;
+            log.error(e.getMessage(), e);
+            return null;
         }
     }
 
     @Override
-    public boolean addTour(String[] tourInfoArr) {
-        if (ArrayUtils.getLength(tourInfoArr) != VALID_TOUR_INFO_ARR_LENGTH) {
+    public boolean addTour(String[] ecotourismArr) {
+        if (ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH) {
             return false;
         }
 
-        for (String tourInfo : tourInfoArr) {
-            if (StringUtils.isEmpty(tourInfo)) {
-                return false;
-            }
+        if (StringUtils.isAnyEmpty(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX], ecotourismArr[TOUR_INFO_ARR_THEME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX])) {
+            return false;
         }
 
-        for (String region : Region.createRegionArrWithPrefix(tourInfoArr[TOUR_INFO_ARR_REGION_INDEX])) {
+        Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX]));
+
+        for (String region : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
             Region savedRegion = regionRepositoryCustom.saveIfNotExist(new Region(region));
 
-            for (String theme : tourInfoArr[TOUR_INFO_ARR_THEME_INDEX].split(",")) {
+            for (String theme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(",")) {
                 Theme savedTheme = themeRepositoryCustom.saveIfNotExist(new Theme(theme));
 
-                Ecotourism ecotourism = new Ecotourism();
-                ecotourism.setRegionCode(savedRegion.getRegionCode());
-                ecotourism.setThemeCode(savedTheme.getThemeCode());
+                Ecotourism ecotourism = new Ecotourism(savedRegion, savedTheme, savedProgram);
 
-
+                ecotourismRepositoryCustom.saveIfNotExist(ecotourism);
             }
         }
 
-        //ecotourismRepository.
-
-        return false;
+        return true;
     }
 
 

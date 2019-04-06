@@ -15,9 +15,13 @@ public class RegionRepositoryCustom implements CommonProcess<Region> {
 
     @Override
     public Region saveIfNotExist(Region region) {
-        Region searchedRegion = regionRepository.findRegionByDohAndSiAndGoonAndGuAndMyunAndRiAnAndEubAndEtc(
+        if (region == null) {
+            return null;
+        }
+
+        Region searchedRegion = regionRepository.findRegionByDohAndSiAndGoonAndGuAndMyunAndRiAndEubAndDongAndEtc(
                 region.getDoh(), region.getSi(), region.getGoon(), region.getGu()
-                , region.getMyun(), region.getRi(), region.getEub(), region.getEtc());
+                , region.getMyun(), region.getRi(), region.getEub(), region.getDong(), region.getEtc());
 
         if (searchedRegion != null) {
             return searchedRegion;
