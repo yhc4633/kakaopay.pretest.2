@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,10 @@ public class RegionRepositoryCustom implements CommonProcess<Region> {
 
         final String searchKeyword = StringUtils.endsWith(keyword, "등") ? StringUtils.substringBeforeLast(keyword, "등") : keyword;
 
+        if (StringUtils.isEmpty(searchKeyword)) {
+            return null;
+        }
+
         List<Region> searchedRegionList = null;
         if (StringUtils.endsWith(searchKeyword, "도")) {
             searchedRegionList = regionRepository.findAllByDoh(searchKeyword);
@@ -65,6 +70,11 @@ public class RegionRepositoryCustom implements CommonProcess<Region> {
             return searchedRegionList;
         }
 
-        return regionRepository.findAll().stream().filter(region -> StringUtils.contains(region.getEtc(), searchKeyword)).collect(Collectors.toList());
+        searchedRegionList = regionRepository.findAll();
+        if (CollectionUtils.isNotEmpty(searchedRegionList)) {
+            return searchedRegionList.stream().filter(region -> StringUtils.contains(region.toString(), searchKeyword)).collect(Collectors.toList());
+        }
+
+        return Collections.EMPTY_LIST;
     }
 }

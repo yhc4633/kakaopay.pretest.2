@@ -13,10 +13,10 @@ import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
 import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
 
 @Data
-public class EcotourismSummaryResponse extends AbstractResponse {
+public class SummaryEcotourismResponse extends AbstractResponse {
     List<SearchResult> resultList = new ArrayList<>();
 
-    public EcotourismSummaryResponse(ResponseHeader responseHeader, List<Ecotourism> ecotourismList) {
+    public SummaryEcotourismResponse(ResponseHeader responseHeader, List<Ecotourism> ecotourismList) {
         super(responseHeader);
 
         if (ecotourismList == null) {

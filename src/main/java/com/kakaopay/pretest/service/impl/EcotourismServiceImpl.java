@@ -153,4 +153,31 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
 
         return ecotourismList;
     }
+
+    @Override
+    public List<Ecotourism> getTourListByProgramIntroKeyword(String programIntroKeyword) {
+        if (StringUtils.isEmpty(programIntroKeyword)) {
+            return null;
+        }
+
+        List<Program> programList = programRepositoryCustom.findProgramListByIntroKeyword(programIntroKeyword);
+
+        if (CollectionUtils.isEmpty(programList)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Ecotourism> ecotourismList = new ArrayList<>();
+
+        for (Program program : programList) {
+            ecotourismList.addAll(findEcotourismListByProgram(program));
+        }
+
+        return ecotourismList;
+    }
+
+    private List<Ecotourism> findEcotourismListByProgram(Program program) {
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(program);
+
+        return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
+    }
 }

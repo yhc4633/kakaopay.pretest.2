@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
-import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
+import static com.kakaopay.pretest.constants.ResponseCode.*;
 
 @Data
 public class EcotourismResponse extends AbstractResponse {

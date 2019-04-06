@@ -9,4 +9,5 @@ public interface TourService<T> {
     int addTour(String[] tourInfoArr);
     List<T> getTourListByRegionCode(String regionCode);
     List<T> getTourListByRegionKeyword(String regionKeyword);
+    List<T> getTourListByProgramIntroKeyword(String programIntroKeyword);
 }
