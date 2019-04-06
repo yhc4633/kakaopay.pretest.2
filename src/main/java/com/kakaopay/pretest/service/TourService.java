@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface TourService<T> {
     List<String> uploadFile(MultipartFile ecotourismFile);
-    boolean addTour(String[] tourInfoArr);
-    List<T> getTourList(String regionCode);
+    int addTour(String[] tourInfoArr);
+    List<T> getTourListByRegionCode(String regionCode);
+    List<T> getTourListByRegionKeyword(String regionKeyword);
 }

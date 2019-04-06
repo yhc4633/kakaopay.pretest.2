@@ -13,11 +13,12 @@ import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
 import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
 
 @Data
-public class EcotourismResponse extends AbstractResponse {
+public class EcotourismSummaryResponse extends AbstractResponse {
     List<SearchResult> resultList = new ArrayList<>();
 
-    public EcotourismResponse(ResponseHeader responseHeader, List<Ecotourism> ecotourismList) {
+    public EcotourismSummaryResponse(ResponseHeader responseHeader, List<Ecotourism> ecotourismList) {
         super(responseHeader);
+
         if (ecotourismList == null) {
             this.resultCode = ERROR_WRONG_PARAMETER.getResultCode();
             return;
@@ -33,18 +34,14 @@ public class EcotourismResponse extends AbstractResponse {
     @Data
     @NoArgsConstructor
     private class SearchResult {
+        private String region;
         private String programName;
         private String theme;
-        private String region;
-        private String programIntro;
-        private String programDetail;
 
         public SearchResult(Ecotourism ecotourism) {
+            this.region = ecotourism.getRegion().getPublicIdentifyCode();
             this.programName = ecotourism.getProgram().getName();
             this.theme = ecotourism.getTheme().getName();
-            this.region = ecotourism.getRegion().toString();
-            this.programIntro = ecotourism.getProgram().getIntro();
-            this.programDetail = ecotourism.getProgram().getDetail();
         }
     }
 }

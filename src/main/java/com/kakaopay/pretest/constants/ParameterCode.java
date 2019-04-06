@@ -1,9 +1,6 @@
 package com.kakaopay.pretest.constants;
 
 public class ParameterCode {
-    public static final String SUCCESS = "SUCCESS";
-    public static final String FAIL = "FAIL";
-
     public static final int COLUMN_NAME_INDEX = 0;
 
     public static final int TOUR_INFO_ARR_NUMBER_INDEX = 0;

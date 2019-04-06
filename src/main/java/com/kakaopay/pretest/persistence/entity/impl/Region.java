@@ -69,7 +69,7 @@ public class Region implements CommonEntity {
             setSi(subdivideRegion);
         } else if (StringUtils.endsWith(subdivideRegion, "군") && StringUtils.isEmpty(getGoon())) {
             setGoon(subdivideRegion);
-        } else if (StringUtils.endsWith(subdivideRegion, "구") && StringUtils.endsWith(subdivideRegion, "지구") == false  && StringUtils.isEmpty(getGu())) {
+        } else if (StringUtils.endsWith(subdivideRegion, "구") && StringUtils.endsWith(subdivideRegion, "지구") == false && StringUtils.isEmpty(getGu())) {
             setGu(subdivideRegion);
         } else if (StringUtils.endsWith(subdivideRegion, "면") && StringUtils.isEmpty(getMyun())) {
             setMyun(subdivideRegion);

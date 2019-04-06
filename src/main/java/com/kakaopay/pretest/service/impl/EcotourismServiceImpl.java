@@ -13,6 +13,7 @@ import com.opencsv.CSVReader;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -25,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.kakaopay.pretest.constants.ParameterCode.*;
+import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
+import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
 
 @Slf4j
 @Data
@@ -38,7 +41,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
 
     /**
      * csv 파일 업로드 메소드
-     * 실패 한 데이터의 번호 들을 리턴
+     * 실패 한 데이터의 번호 들 리턴
      *
      * @param ecotourismFile
      * @return
@@ -59,7 +62,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             ecotourismList.remove(COLUMN_NAME_INDEX);
 
             for (String[] ecotourismArr : ecotourismList){
-                if (addTour(ecotourismArr) == false) {
+                if (addTour(ecotourismArr) != SUCCESS.getResultCode()) {
                     uploadFailedTourNoList.add(ecotourismArr[TOUR_INFO_ARR_NUMBER_INDEX]);
                 }
             }
@@ -70,14 +73,21 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         }
     }
 
+    /**
+     * 생태 관광 정보 등록
+     * result code 리턴
+     *
+     * @param ecotourismArr
+     * @return
+     */
     @Override
-    public boolean addTour(String[] ecotourismArr) {
+    public int addTour(String[] ecotourismArr) {
         if (ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH) {
-            return false;
+            return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
         if (StringUtils.isAnyEmpty(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX], ecotourismArr[TOUR_INFO_ARR_THEME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX])) {
-            return false;
+            return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
         Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX]));
@@ -94,11 +104,11 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             }
         }
 
-        return true;
+        return SUCCESS.getResultCode();
     }
 
     @Override
-    public List<Ecotourism> getTourList(String regionCode) {
+    public List<Ecotourism> getTourListByRegionCode(String regionCode) {
         if (StringUtils.isEmpty(regionCode) || StringUtils.startsWith(regionCode,"reg_") == false) {
             return null;
         }
@@ -114,10 +124,33 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return Collections.EMPTY_LIST;
         }
 
+        return findEcotourismListByRegion(region);
+    }
+
+    private List<Ecotourism> findEcotourismListByRegion(Region region) {
         List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegion(region);
 
         return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
     }
 
+    @Override
+    public List<Ecotourism> getTourListByRegionKeyword(String regionKeyword) {
+        if (regionKeyword == null) {
+            return null;
+        }
 
+        List<Region> regionList = regionRepositoryCustom.findRegionListByKeyword(regionKeyword);
+
+        if (CollectionUtils.isEmpty(regionList)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Ecotourism> ecotourismList = new ArrayList<>();
+
+        for (Region region : regionList) {
+            ecotourismList.addAll(findEcotourismListByRegion(region));
+        }
+
+        return ecotourismList;
+    }
 }
