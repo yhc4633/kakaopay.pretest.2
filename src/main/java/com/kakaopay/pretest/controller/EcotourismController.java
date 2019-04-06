@@ -3,6 +3,7 @@ package com.kakaopay.pretest.controller;
 import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.model.extend.EcotourismResponse;
 import com.kakaopay.pretest.model.extend.ProcessResultResponse;
+import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.service.TourService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,8 @@ public class EcotourismController {
     public EcotourismResponse searchEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                @PathVariable(value = "regionCode") String regionCode) {
 
+        List<Ecotourism> ecotourismList = ecotourismService.getTourList(regionCode);
 
-        return new EcotourismResponse(new ResponseHeader(transactionId, SUCCESS));
+        return new EcotourismResponse(new ResponseHeader(transactionId, SUCCESS), ecotourismList);
     }
 }

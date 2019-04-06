@@ -8,6 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static com.kakaopay.pretest.constants.ParameterCode.SINGLE_REGION_COUNT;
 
 @Data
@@ -109,7 +112,7 @@ public class Region implements CommonEntity {
         }
 
         int firstIndex = 0;
-        String multipleRegionPrefix = StringUtils.substringBeforeLast(regionArr[firstIndex], " ");
+        String multipleRegionPrefix = StringUtils.substringBeforeLast(regionArr[firstIndex].trim(), " ").trim();
         for (int i=firstIndex; i<regionArr.length; i++) {
             if (i != firstIndex) {
                 regionArr[i] = multipleRegionPrefix + " " + regionArr[i].trim();
@@ -119,5 +122,10 @@ public class Region implements CommonEntity {
         return regionArr;
     }
 
-
+    @Override
+    public String toString() {
+        return Stream.of(getDoh(), getSi(), getGoon(), getGu(), getMyun(), getRi(), getEub(), getDong(), getEtc())
+                .filter(string -> StringUtils.isNotEmpty(string))
+                .collect(Collectors.joining(" "));
+    }
 }

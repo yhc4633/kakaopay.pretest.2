@@ -15,11 +15,13 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.kakaopay.pretest.constants.ParameterCode.*;
@@ -28,12 +30,19 @@ import static com.kakaopay.pretest.constants.ParameterCode.*;
 @Data
 @Service("ecotourismService")
 @AllArgsConstructor
-public class EcotourismServiceImpl implements TourService {
+public class EcotourismServiceImpl implements TourService<Ecotourism> {
     private final EcotourismRepositoryCustom ecotourismRepositoryCustom;
     private final RegionRepositoryCustom regionRepositoryCustom;
     private final ThemeRepositoryCustom themeRepositoryCustom;
     private final ProgramRepositoryCustom programRepositoryCustom;
 
+    /**
+     * csv 파일 업로드 메소드
+     * 실패 한 데이터의 번호 들을 리턴
+     *
+     * @param ecotourismFile
+     * @return
+     */
     @Override
     public List<String> uploadFile(MultipartFile ecotourismFile) {
         if (ecotourismFile == null) {
@@ -86,6 +95,28 @@ public class EcotourismServiceImpl implements TourService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<Ecotourism> getTourList(String regionCode) {
+        if (StringUtils.isEmpty(regionCode) || StringUtils.startsWith(regionCode,"reg_") == false) {
+            return null;
+        }
+
+        String regionCodeExceptPrefix = StringUtils.replace(regionCode, "reg_", "");
+        if (NumberUtils.isDigits(regionCodeExceptPrefix) == false) {
+            return null;
+        }
+
+        Region region = regionRepositoryCustom.getRegionRepository().findOne(NumberUtils.toLong(regionCodeExceptPrefix));
+
+        if (region == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegion(region);
+
+        return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
     }
 
 

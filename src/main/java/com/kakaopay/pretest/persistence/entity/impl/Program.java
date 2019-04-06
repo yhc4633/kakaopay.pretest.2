@@ -1,7 +1,6 @@
 package com.kakaopay.pretest.persistence.entity.impl;
 
 import com.kakaopay.pretest.persistence.entity.CommonEntity;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
