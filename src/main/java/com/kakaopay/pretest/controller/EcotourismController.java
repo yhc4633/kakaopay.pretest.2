@@ -57,7 +57,14 @@ public class EcotourismController {
 
     @PutMapping(value = "/tour/modify", params = {"ecotourismCode"})
     public ProcessResultResponse modifyEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
-                                                  @RequestParam(value = "ecotourismCode", defaultValue = "") String ecotourismCode) {
+                                                  @RequestParam(value = "ecotourismCode", defaultValue = "") String ecotourismCode,
+                                                  @RequestParam(value = "programName", defaultValue = "") String programName,
+                                                  @RequestParam(value = "theme", defaultValue = "") String theme,
+                                                  @RequestParam(value = "region", defaultValue = "") String region,
+                                                  @RequestParam(value = "programIntro", defaultValue = "") String programIntro,
+                                                  @RequestParam(value = "programDetail", defaultValue = "") String programDetail) {
+
+        String[] tourInfoArr = {programName, theme, region, programIntro, programDetail};
 
 
 

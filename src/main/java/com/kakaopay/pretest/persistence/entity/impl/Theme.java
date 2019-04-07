@@ -17,6 +17,7 @@ public class Theme implements CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "theme_code")
     private Long themeCode;
 
     @Column

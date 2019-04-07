@@ -18,6 +18,9 @@ public class ParameterCode {
     public static final String SEPARATOR_SPACE = " ";
     public static final String SEPARATOR_WAVE = "~";
 
+    public static final String ECOTOURISM_CODE_PREFIX = "ectr_";
+    public static final String REGION_CODE_PREFIX = "reg_";
+
     public static class Headers {
         public static final String TRANSACTION_ID = "transactionId";
     }

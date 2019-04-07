@@ -27,9 +27,7 @@ public class FrequentEcotourismRegionResponse extends AbstractResponse {
         Map<String, List<Ecotourism>> regionCountedMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getRegion().toString()));
 
         for (String regionCountedMapKey : regionCountedMap.keySet()) {
-            // 테마만 다른 경우 같은 관광 정보로 간주해 counting
-            Set<String> programAndRegionSet = regionCountedMap.get(regionCountedMapKey).stream().map(Ecotourism::getTourKeyExceptTheme).collect(Collectors.toSet());
-            resultList.add(new SearchResult(regionCountedMapKey, programAndRegionSet.size()));
+            resultList.add(new SearchResult(regionCountedMapKey, regionCountedMap.get(regionCountedMapKey).size()));
         }
 
         this.resultCode = SUCCESS.getResultCode();

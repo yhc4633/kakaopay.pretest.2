@@ -3,12 +3,12 @@ package com.kakaopay.pretest.model.response;
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
+import com.kakaopay.pretest.persistence.entity.impl.Theme;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.kakaopay.pretest.constants.ParameterCode.SEPARATOR_COMMA;
@@ -27,20 +27,8 @@ public class SummaryEcotourismResponse extends AbstractResponse {
             return;
         }
 
-        Map<String, List<Ecotourism>> tourKeyExceptThemeMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getTourKeyExceptTheme()));
-
-        for (String tourKeyExceptTheme : tourKeyExceptThemeMap.keySet()) {
-            SearchResult searchResult = null;
-
-            for (Ecotourism ecotourism : tourKeyExceptThemeMap.get(tourKeyExceptTheme)) {
-                if (searchResult == null) {
-                    searchResult = new SearchResult(ecotourism);
-                } else {
-                    searchResult.addTheme(ecotourism.getTheme().getName());
-                }
-            }
-
-            resultList.add(searchResult);
+        for (Ecotourism ecotourism : ecotourismList) {
+            resultList.add(new SearchResult(ecotourism));
         }
 
         this.resultCode = SUCCESS.getResultCode();
@@ -56,11 +44,7 @@ public class SummaryEcotourismResponse extends AbstractResponse {
         public SearchResult(Ecotourism ecotourism) {
             this.region = ecotourism.getRegion().getPublicIdentifyCode();
             this.programName = ecotourism.getProgram().getName();
-            this.theme = ecotourism.getTheme().getName();
-        }
-
-        public void addTheme(String theme) {
-            this.theme = this.theme + SEPARATOR_COMMA + theme;
+            this.theme = ecotourism.getThemeList().stream().map(Theme::getName).collect(Collectors.joining(SEPARATOR_COMMA));
         }
     }
 }
