@@ -61,7 +61,7 @@ public class Region implements CommonEntity {
         }
 
         if (StringUtils.endsWith(subdivideRegion, "등")) {
-            subdivideRegion = StringUtils.substringBeforeLast(subdivideRegion, "등");
+            subdivideRegion = StringUtils.substringBeforeLast(subdivideRegion, "등").trim();
         }
 
         if (StringUtils.endsWith(subdivideRegion, "도") && StringUtils.isEmpty(getDoh())) {
@@ -92,11 +92,6 @@ public class Region implements CommonEntity {
     @Override
     public String getPublicIdentifyCode() {
         return "reg_" + getRegionCode();
-    }
-
-    @Override
-    public void setPublicIdentifyCode(String identifyCode) {
-
     }
 
     public static String[] createRegionArrWithPrefix(String regions) {

@@ -41,9 +41,4 @@ public class Ecotourism implements CommonEntity {
     public String getPublicIdentifyCode() {
         return ECOTOURISM_CODE_PREFIX + getEcotourismCode();
     }
-
-    @Override
-    public void setPublicIdentifyCode(String identifyCode) {
-
-    }
 }

@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.kakaopay.pretest.constants.ParameterCode.*;
 import static com.kakaopay.pretest.constants.ResponseCode.*;
@@ -81,35 +82,48 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
      */
     @Override
     public Integer addTour(String[] ecotourismArr) {
-        if (ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH) {
-            return ERROR_WRONG_PARAMETER.getResultCode();
-        }
-
-        if (StringUtils.isAnyEmpty(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX], ecotourismArr[TOUR_INFO_ARR_THEME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX])) {
+        if (isValidEcotourismArr(ecotourismArr) == false) {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
         List<Region> savedRegionList = new ArrayList<>();
         for (String region : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
-            savedRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(region)));
+            savedRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(region.trim())));
         }
 
-        List<Theme> saverThemeList = new ArrayList<>();
+        List<Theme> savedThemeList = new ArrayList<>();
         for (String theme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
-            saverThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme)));
+            if (StringUtils.isNotEmpty(theme.trim())) {
+                savedThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme.trim())));
+            }
         }
 
-        Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX]));
+        String programName = ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX];
+        String programIntro = ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX];
+        String programDetail = ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX];
+        Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(programName, programIntro, programDetail));
 
-        ecotourismRepositoryCustom.saveIfNotExist(new Ecotourism(savedRegionList, saverThemeList, savedProgram));
+        ecotourismRepositoryCustom.saveIfNotExist(new Ecotourism(savedRegionList, savedThemeList, savedProgram));
 
         return SUCCESS.getResultCode();
     }
 
+    private boolean isValidEcotourismArr(String[] ecotourismArr) {
+        if (ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH
+                || StringUtils.isAnyEmpty(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX], ecotourismArr[TOUR_INFO_ARR_THEME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX])) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
-    public Integer modifyTour(String ecotourismCode, String[] ecotourismArr) {
-        if (StringUtils.isEmpty(ecotourismCode) || StringUtils.startsWith(ecotourismCode, ECOTOURISM_CODE_PREFIX) == false
-                || ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH || StringUtils.isEmpty(StringUtils.join(ecotourismArr))) {
+    public Integer modifyTour(String[] ecotourismArr) {
+        if (isValidEcotourismArr(ecotourismArr) == false) {
+            return ERROR_WRONG_PARAMETER.getResultCode();
+        }
+
+        String ecotourismCode = ecotourismArr[TOUR_INFO_ARR_NUMBER_INDEX];
+        if (StringUtils.isEmpty(ecotourismCode) || StringUtils.startsWith(ecotourismCode, ECOTOURISM_CODE_PREFIX) == false) {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
@@ -124,14 +138,59 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return ERROR_NO_DATA.getResultCode();
         }
 
-        // 프로그램 업데이트. 해당 프로그램 쓰는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
+        // 지역 업데이트. 단순 지역 추가 시 insert, 지역이 바뀐 경우 새 지역은 insert
+        List<Region> newRegionList = new ArrayList<>();
+        List<Region> removeTargetRegionList = new ArrayList<>(ecotourism.getRegionList());
+        for (String newRegion : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
+            newRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(newRegion.trim())));
+            removeTargetRegionList = removeTargetRegionList.stream().filter(region -> StringUtils.equals(region.toString(), newRegion) == false).collect(Collectors.toList());
+        }
+        ecotourism.setRegionList(newRegionList);
 
-        // 지역 업데이트. 해당 지역에 해당하는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
+        // 테마 업데이트. 단순 테마 추가 시 insert, 테마가 바뀐 경우 새 테마는 insert
+        List<Theme> newThemeList = new ArrayList<>();
+        List<Theme> removeTargetThemeList = new ArrayList<>(ecotourism.getThemeList());
+        for (String newTheme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
+            newThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(newTheme.trim())));
+            removeTargetThemeList = removeTargetThemeList.stream().filter(theme -> StringUtils.equals(theme.getName(), newTheme) == false).collect(Collectors.toList());
+        }
+        ecotourism.setThemeList(newThemeList);
 
-        // 테마 업데이트.
+        // 프로그램 업데이트. 해당 프로그램이 위의 데이터만 해당하면 update, 그 외에도 있으면 insert 후 매핑 변경
+        ecotourism.setProgram(renewProgram(ecotourismArr, ecotourism.getProgram()));
 
+        ecotourismRepositoryCustom.getEcotourismRepository().save(ecotourism);
+
+        // 제외된 지역은 다른 데이터의 사용여부 확인 후 잔존 or 제거
+        if (removeTargetRegionList.size() > NumberUtils.INTEGER_ZERO && CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(removeTargetRegionList)) == NumberUtils.INTEGER_ZERO) {
+            regionRepositoryCustom.getRegionRepository().delete(removeTargetRegionList);
+        }
+
+        // 제외된 테마는 다른 데이터의 사용여부 확인 후 잔존 or 제거
+        if (removeTargetThemeList.size() > NumberUtils.INTEGER_ZERO && CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeList(removeTargetThemeList)) == NumberUtils.INTEGER_ZERO) {
+            themeRepositoryCustom.getThemeRepository().delete(removeTargetThemeList);
+        }
 
         return SUCCESS.getResultCode();
+    }
+
+    private Program renewProgram(String[] ecotourismArr, Program program) {
+        String programName = ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX];
+        String programIntro = ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX];
+        String programDetail = ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX];
+        if (program.isSameProgram(programName, programIntro, programDetail)) {
+            return program;
+        }
+
+        // 해당 프로그램을 2개 이상의 관광 정보가 사용하는 경우 새로 추가
+        if (CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(program)) > NumberUtils.INTEGER_ONE) {
+            return programRepositoryCustom.saveIfNotExist(new Program(programName, programIntro, programDetail));
+        }
+
+        program.setName(programName);
+        program.setIntro(programIntro);
+        program.setDetail(programDetail);
+        return programRepositoryCustom.getProgramRepository().save(program);
     }
 
     @Override

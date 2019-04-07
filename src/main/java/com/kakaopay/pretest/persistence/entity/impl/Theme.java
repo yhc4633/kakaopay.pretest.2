@@ -27,9 +27,4 @@ public class Theme implements CommonEntity {
     public String getPublicIdentifyCode() {
         return "thm_" + getThemeCode();
     }
-
-    @Override
-    public void setPublicIdentifyCode(String identifyCode) {
-
-    }
 }

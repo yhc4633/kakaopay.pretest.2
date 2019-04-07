@@ -14,5 +14,5 @@ public interface EcotourismRepository extends JpaRepository<Ecotourism, Long> {
     Ecotourism findEcotourismByRegionListAndThemeListAndProgram(List<Region> regionList, List<Theme> theme, Program program);
     List<Ecotourism> findAllByRegionList(List<Region> regionList);
     List<Ecotourism> findAllByProgram(Program program);
-    List<Ecotourism> findAllByRegionListAndProgram(List<Region> regionList, Program program);
+    List<Ecotourism> findAllByThemeList(List<Theme> themeList);
 }

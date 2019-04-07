@@ -1,6 +1,7 @@
 package com.kakaopay.pretest.controller;
 
 import com.kakaopay.pretest.model.ResponseHeader;
+import com.kakaopay.pretest.model.request.ModifyEcotourismRequest;
 import com.kakaopay.pretest.model.response.*;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.service.TourService;
@@ -55,18 +56,14 @@ public class EcotourismController {
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
 
-    @PutMapping(value = "/tour/modify", params = {"ecotourismCode"})
+    @PutMapping(value = "/tour/modify")
     public ProcessResultResponse modifyEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
-                                                  @RequestParam(value = "ecotourismCode", defaultValue = "") String ecotourismCode,
-                                                  @RequestParam(value = "programName", defaultValue = "") String programName,
-                                                  @RequestParam(value = "theme", defaultValue = "") String theme,
-                                                  @RequestParam(value = "region", defaultValue = "") String region,
-                                                  @RequestParam(value = "programIntro", defaultValue = "") String programIntro,
-                                                  @RequestParam(value = "programDetail", defaultValue = "") String programDetail) {
+                                                  @RequestBody ModifyEcotourismRequest modifyEcotourismRequest) {
 
-        String[] tourInfoArr = {programName, theme, region, programIntro, programDetail};
+        String[] tourInfoArr = {modifyEcotourismRequest.getEcotourismCode(), modifyEcotourismRequest.getProgramName(), modifyEcotourismRequest.getTheme()
+                , modifyEcotourismRequest.getRegion(), modifyEcotourismRequest.getProgramIntro(), modifyEcotourismRequest.getProgramDetail()};
 
-        int resultCode = ecotourismService.modifyTour(ecotourismCode, tourInfoArr);
+        int resultCode = ecotourismService.modifyTour(tourInfoArr);
 
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }

@@ -3,6 +3,7 @@ package com.kakaopay.pretest.persistence.entity.impl;
 import com.kakaopay.pretest.persistence.entity.CommonEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 
@@ -38,8 +39,9 @@ public class Program implements CommonEntity {
         return "prgm_" + getProgramCode();
     }
 
-    @Override
-    public void setPublicIdentifyCode(String identifyCode) {
-
+    public boolean isSameProgram(String name, String intro, String detail) {
+        return StringUtils.equals(getName(), name)
+                && StringUtils.equals(getIntro(), intro)
+                && StringUtils.equals(getDetail(), detail);
     }
 }
