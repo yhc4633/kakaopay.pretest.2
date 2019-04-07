@@ -128,14 +128,14 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         // region, program이 같은 ecotourism은 같은 데이터로 간주
         List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionAndProgram(ecotourism.getRegion(), ecotourism.getProgram());
 
-        // 프로그램 업데이트. 해당 프로그램 쓰는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert
+        // 프로그램 업데이트. 해당 프로그램 쓰는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
 
-        // 지역 업데이트. 해당 지역인 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert
+        // 지역 업데이트. 해당 지역인 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
 
-        // 테마 업데이트
+        // 테마 업데이트.
 
 
-        return null;
+        return SUCCESS.getResultCode();
     }
 
     @Override

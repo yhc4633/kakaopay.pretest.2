@@ -66,9 +66,9 @@ public class EcotourismController {
 
         String[] tourInfoArr = {programName, theme, region, programIntro, programDetail};
 
+        int resultCode = ecotourismService.modifyTour(ecotourismCode, tourInfoArr);
 
-
-        return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), 0);
+        return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
 
     @GetMapping(value = "/tour/search", params = {"regionKeyword"})
