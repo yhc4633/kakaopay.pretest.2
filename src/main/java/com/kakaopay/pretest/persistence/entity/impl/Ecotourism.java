@@ -15,8 +15,8 @@ import static com.kakaopay.pretest.constants.ParameterCode.*;
 @Table(name = "ecotourism")
 @NoArgsConstructor
 public class Ecotourism implements CommonEntity {
-    public Ecotourism(Region region, List<Theme> theme, Program program) {
-        this.region = region;
+    public Ecotourism(List<Region> region, List<Theme> theme, Program program) {
+        this.regionList = region;
         this.themeList = theme;
         this.program = program;
     }
@@ -25,9 +25,9 @@ public class Ecotourism implements CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ecotourismCode;
 
-    @ManyToOne(targetEntity = Region.class)
-    @JoinColumn(name ="region_code")
-    private Region region;
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinTable(name = "ecotourism_region", joinColumns = @JoinColumn(name ="ecotourism_code"), inverseJoinColumns = @JoinColumn(name ="region_code"))
+    private List<Region> regionList;
 
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(name = "ecotourism_theme", joinColumns = @JoinColumn(name ="ecotourism_code"), inverseJoinColumns = @JoinColumn(name ="theme_code"))
@@ -45,9 +45,5 @@ public class Ecotourism implements CommonEntity {
     @Override
     public void setPublicIdentifyCode(String identifyCode) {
 
-    }
-
-    public String getTourKeyExceptTheme() {
-        return getRegion().getPublicIdentifyCode() + SEPARATOR_BAR + getProgram().getPublicIdentifyCode();
     }
 }

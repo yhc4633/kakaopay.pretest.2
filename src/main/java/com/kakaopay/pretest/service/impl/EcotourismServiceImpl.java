@@ -89,20 +89,19 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
+        List<Region> savedRegionList = new ArrayList<>();
+        for (String region : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
+            savedRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(region)));
+        }
+
+        List<Theme> saverThemeList = new ArrayList<>();
+        for (String theme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
+            saverThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme)));
+        }
+
         Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX], ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX]));
 
-        for (String region : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
-            Region savedRegion = regionRepositoryCustom.saveIfNotExist(new Region(region));
-
-            List<Theme> saverThemeList = new ArrayList<>();
-            for (String theme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
-                saverThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme)));
-            }
-
-            Ecotourism ecotourism = new Ecotourism(savedRegion, saverThemeList, savedProgram);
-
-            ecotourismRepositoryCustom.saveIfNotExist(ecotourism);
-        }
+        ecotourismRepositoryCustom.saveIfNotExist(new Ecotourism(savedRegionList, saverThemeList, savedProgram));
 
         return SUCCESS.getResultCode();
     }
@@ -125,12 +124,9 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return ERROR_NO_DATA.getResultCode();
         }
 
-        // region, program이 같은 ecotourism은 같은 데이터로 간주
-        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionAndProgram(ecotourism.getRegion(), ecotourism.getProgram());
-
         // 프로그램 업데이트. 해당 프로그램 쓰는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
 
-        // 지역 업데이트. 해당 지역인 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
+        // 지역 업데이트. 해당 지역에 해당하는 여행 정보가 위의 같은 데이터들 뿐이면 update, 그 외에도 있으면 insert 후 매핑 변경
 
         // 테마 업데이트.
 
@@ -155,11 +151,14 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return Collections.EMPTY_LIST;
         }
 
-        return findEcotourismListByRegion(region);
+        List<Region> regionList = new ArrayList<>();
+        regionList.add(region);
+
+        return findEcotourismListByRegionList(regionList);
     }
 
-    private List<Ecotourism> findEcotourismListByRegion(Region region) {
-        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegion(region);
+    private List<Ecotourism> findEcotourismListByRegionList(List<Region> regionList) {
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(regionList);
 
         return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
     }
@@ -177,10 +176,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         }
 
         List<Ecotourism> ecotourismList = new ArrayList<>();
-
-        for (Region region : regionList) {
-            ecotourismList.addAll(findEcotourismListByRegion(region));
-        }
+        ecotourismList.addAll(findEcotourismListByRegionList(regionList));
 
         return ecotourismList;
     }

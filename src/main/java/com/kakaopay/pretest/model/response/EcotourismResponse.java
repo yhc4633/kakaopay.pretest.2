@@ -3,6 +3,7 @@ package com.kakaopay.pretest.model.response;
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
+import com.kakaopay.pretest.persistence.entity.impl.Region;
 import com.kakaopay.pretest.persistence.entity.impl.Theme;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,7 @@ public class EcotourismResponse extends AbstractResponse {
             this.ecotourismCode = ecotourism.getPublicIdentifyCode();
             this.programName = ecotourism.getProgram().getName();
             this.theme = ecotourism.getThemeList().stream().map(Theme::getName).collect(Collectors.joining(SEPARATOR_COMMA));
-            this.region = ecotourism.getRegion().toString();
+            this.region = ecotourism.getRegionList().stream().map(Region::toString).collect(Collectors.joining(SEPARATOR_COMMA));
             this.programIntro = ecotourism.getProgram().getIntro();
             this.programDetail = ecotourism.getProgram().getDetail();
         }

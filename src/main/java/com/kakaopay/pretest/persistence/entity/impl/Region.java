@@ -25,6 +25,7 @@ public class Region implements CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "region_code")
     private Long regionCode;
 
     @Column

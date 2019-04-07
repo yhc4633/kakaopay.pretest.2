@@ -3,6 +3,7 @@ package com.kakaopay.pretest.model.response;
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
+import com.kakaopay.pretest.persistence.entity.impl.Region;
 import com.kakaopay.pretest.persistence.entity.impl.Theme;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.kakaopay.pretest.constants.ParameterCode.SEPARATOR_COMMA;
-import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
-import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
+import static com.kakaopay.pretest.constants.ParameterCode.*;
+import static com.kakaopay.pretest.constants.ResponseCode.*;
 
 @Data
 public class SummaryEcotourismResponse extends AbstractResponse {
@@ -42,7 +42,7 @@ public class SummaryEcotourismResponse extends AbstractResponse {
         private String theme;
 
         public SearchResult(Ecotourism ecotourism) {
-            this.region = ecotourism.getRegion().getPublicIdentifyCode();
+            this.region = ecotourism.getRegionList().stream().map(Region::toString).collect(Collectors.joining(SEPARATOR_COMMA));
             this.programName = ecotourism.getProgram().getName();
             this.theme = ecotourism.getThemeList().stream().map(Theme::getName).collect(Collectors.joining(SEPARATOR_COMMA));
         }

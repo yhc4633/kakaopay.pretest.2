@@ -3,10 +3,13 @@ package com.kakaopay.pretest.model.response;
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
+import com.kakaopay.pretest.persistence.entity.impl.Region;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.kakaopay.pretest.constants.ResponseCode.*;
@@ -24,10 +27,12 @@ public class FrequentEcotourismRegionResponse extends AbstractResponse {
             return;
         }
 
-        Map<String, List<Ecotourism>> regionCountedMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getRegion().toString()));
+        List<Region> regionList = ecotourismList.stream().flatMap(ecotourism -> ecotourism.getRegionList().stream()).collect(Collectors.toList());
 
-        for (String regionCountedMapKey : regionCountedMap.keySet()) {
-            resultList.add(new SearchResult(regionCountedMapKey, regionCountedMap.get(regionCountedMapKey).size()));
+        Map<String, Long> regionCountMap = regionList.stream().collect(Collectors.groupingBy(Region::toString, Collectors.counting()));
+
+        for (String regionCountMapKey : regionCountMap.keySet()) {
+            resultList.add(new SearchResult(regionCountMapKey, Math.toIntExact(regionCountMap.get(regionCountMapKey))));
         }
 
         this.resultCode = SUCCESS.getResultCode();
