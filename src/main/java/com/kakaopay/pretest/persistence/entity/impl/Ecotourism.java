@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import static com.kakaopay.pretest.constants.ParameterCode.*;
+
 @Data
 @Entity
 @Table(name = "ecotourism")
@@ -41,5 +43,9 @@ public class Ecotourism implements CommonEntity {
     @Override
     public void setPublicIdentifyCode(String identifyCode) {
 
+    }
+
+    public String getTourKeyExceptTheme() {
+        return getRegion().getPublicIdentifyCode() + SEPARATOR_BAR + getProgram().getPublicIdentifyCode();
     }
 }

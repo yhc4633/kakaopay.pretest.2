@@ -1,7 +1,7 @@
 package com.kakaopay.pretest.controller;
 
 import com.kakaopay.pretest.model.ResponseHeader;
-import com.kakaopay.pretest.model.extend.*;
+import com.kakaopay.pretest.model.response.*;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.service.TourService;
 import lombok.RequiredArgsConstructor;
@@ -55,11 +55,14 @@ public class EcotourismController {
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
 
-    /*@PutMapping(value = "/tour/modify")
-    public ProcessResultResponse modifyEcotourism((@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
-                                                  ) {
+    @PutMapping(value = "/tour/modify", params = {"ecotourismCode"})
+    public ProcessResultResponse modifyEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
+                                                  @RequestParam(value = "ecotourismCode", defaultValue = "") String ecotourismCode) {
 
-    }*/
+
+
+        return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), 0);
+    }
 
     @GetMapping(value = "/tour/search", params = {"regionKeyword"})
     public SummaryEcotourismResponse searchSummary(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
@@ -75,5 +78,14 @@ public class EcotourismController {
         List<Ecotourism> ecotourismList = ecotourismService.getTourListByProgramIntroKeyword(programIntroKeyword);
 
         return new FrequentEcotourismRegionResponse(new ResponseHeader(transactionId, SUCCESS), programIntroKeyword, ecotourismList);
+    }
+
+    @GetMapping(value = "/tour/search", params = {"programDetailKeyword"})
+    public FrequentEcotourismProgramDetailResponse searchProgramDetailFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
+                                                                                @RequestParam(value = "programDetailKeyword", defaultValue = "") String programDetailKeyword) {
+
+        Integer count = ecotourismService.getFrequencyInProgramDetail(programDetailKeyword);
+
+        return new FrequentEcotourismProgramDetailResponse(new ResponseHeader(transactionId, SUCCESS), programDetailKeyword, count);
     }
 }

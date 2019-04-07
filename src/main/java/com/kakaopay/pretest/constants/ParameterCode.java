@@ -13,6 +13,11 @@ public class ParameterCode {
 
     public static final int SINGLE_REGION_COUNT = 1;
 
+    public static final String SEPARATOR_BAR = "|";
+    public static final String SEPARATOR_COMMA = ",";
+    public static final String SEPARATOR_SPACE = " ";
+    public static final String SEPARATOR_WAVE = "~";
+
     public static class Headers {
         public static final String TRANSACTION_ID = "transactionId";
     }

@@ -81,7 +81,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
      * @return
      */
     @Override
-    public int addTour(String[] ecotourismArr) {
+    public Integer addTour(String[] ecotourismArr) {
         if (ArrayUtils.getLength(ecotourismArr) != VALID_TOUR_INFO_ARR_LENGTH) {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
@@ -179,5 +179,20 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(program);
 
         return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
+    }
+
+    @Override
+    public Integer getFrequencyInProgramDetail(String programDetailKeyword) {
+        if (StringUtils.isEmpty(programDetailKeyword)) {
+            return null;
+        }
+
+        Integer count = 0;
+
+        for (Program program : programRepositoryCustom.getProgramRepository().findAll()) {
+            count += StringUtils.countMatches(program.getDetail(), programDetailKeyword);
+        }
+
+        return count;
     }
 }

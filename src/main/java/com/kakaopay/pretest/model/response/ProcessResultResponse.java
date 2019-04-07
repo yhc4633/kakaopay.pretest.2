@@ -1,4 +1,4 @@
-package com.kakaopay.pretest.model.extend;
+package com.kakaopay.pretest.model.response;
 
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;

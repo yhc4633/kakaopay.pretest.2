@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface TourService<T> {
     List<String> uploadFile(MultipartFile ecotourismFile);
-    int addTour(String[] tourInfoArr);
+    Integer addTour(String[] tourInfoArr);
     List<T> getTourListByRegionCode(String regionCode);
     List<T> getTourListByRegionKeyword(String regionKeyword);
     List<T> getTourListByProgramIntroKeyword(String programIntroKeyword);
+    Integer getFrequencyInProgramDetail(String programDetailKeyword);
 }

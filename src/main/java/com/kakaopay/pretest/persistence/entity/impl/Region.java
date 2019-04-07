@@ -11,14 +11,14 @@ import javax.persistence.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.kakaopay.pretest.constants.ParameterCode.SINGLE_REGION_COUNT;
+import static com.kakaopay.pretest.constants.ParameterCode.*;
 
 @Data
 @Entity
 @NoArgsConstructor
 public class Region implements CommonEntity {
     public Region(String region) {
-        for (String subdivideRegion : StringUtils.split(region, " ")) {
+        for (String subdivideRegion : StringUtils.split(region, SEPARATOR_SPACE)) {
             setPropertyByRule(subdivideRegion);
         }
     }
@@ -83,7 +83,7 @@ public class Region implements CommonEntity {
             if (StringUtils.isEmpty(getEtc())) {
                 setEtc(subdivideRegion);
             } else {
-                setEtc(getEtc() + " " + subdivideRegion);
+                setEtc(getEtc() + SEPARATOR_SPACE + subdivideRegion);
             }
         }
     }
@@ -103,19 +103,19 @@ public class Region implements CommonEntity {
             return ArrayUtils.EMPTY_STRING_ARRAY;
         }
 
-        regions = StringUtils.replace(regions, "~", ",");
+        regions = StringUtils.replace(regions, SEPARATOR_WAVE, SEPARATOR_COMMA);
 
-        String[] regionArr = StringUtils.split(regions, ",");
+        String[] regionArr = StringUtils.split(regions, SEPARATOR_COMMA);
 
         if (regionArr.length == SINGLE_REGION_COUNT) {
             return regionArr;
         }
 
         int firstIndex = 0;
-        String multipleRegionPrefix = StringUtils.substringBeforeLast(regionArr[firstIndex].trim(), " ").trim();
+        String multipleRegionPrefix = StringUtils.substringBeforeLast(regionArr[firstIndex].trim(), SEPARATOR_SPACE).trim();
         for (int i=firstIndex; i<regionArr.length; i++) {
             if (i != firstIndex) {
-                regionArr[i] = multipleRegionPrefix + " " + regionArr[i].trim();
+                regionArr[i] = multipleRegionPrefix + SEPARATOR_SPACE + regionArr[i].trim();
             }
         }
 
@@ -126,6 +126,6 @@ public class Region implements CommonEntity {
     public String toString() {
         return Stream.of(getDoh(), getSi(), getGoon(), getGu(), getMyun(), getRi(), getEub(), getDong(), getEtc())
                 .filter(string -> StringUtils.isNotEmpty(string))
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining(SEPARATOR_SPACE));
     }
 }

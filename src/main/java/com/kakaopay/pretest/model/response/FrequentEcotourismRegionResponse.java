@@ -1,4 +1,4 @@
-package com.kakaopay.pretest.model.extend;
+package com.kakaopay.pretest.model.response;
 
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
@@ -6,9 +6,7 @@ import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kakaopay.pretest.constants.ResponseCode.*;
@@ -26,12 +24,15 @@ public class FrequentEcotourismRegionResponse extends AbstractResponse {
             return;
         }
 
-        // TODO : 테마만 다른 경우 같은 관광 정보로 간주
-        Map<String, List<Ecotourism>> regionCountedMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getRegion().getPublicIdentifyCode()));
+        Map<String, List<Ecotourism>> regionCountedMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getRegion().toString()));
 
         for (String regionCountedMapKey : regionCountedMap.keySet()) {
-            resultList.add(new SearchResult(regionCountedMapKey, regionCountedMap.get(regionCountedMapKey).size()));
+            // 테마만 다른 경우 같은 관광 정보로 간주해 counting
+            Set<String> programAndRegionSet = regionCountedMap.get(regionCountedMapKey).stream().map(Ecotourism::getTourKeyExceptTheme).collect(Collectors.toSet());
+            resultList.add(new SearchResult(regionCountedMapKey, programAndRegionSet.size()));
         }
+
+        this.resultCode = SUCCESS.getResultCode();
     }
 
     @Data

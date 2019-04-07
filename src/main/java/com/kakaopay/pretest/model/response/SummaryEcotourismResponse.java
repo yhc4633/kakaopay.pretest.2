@@ -1,4 +1,4 @@
-package com.kakaopay.pretest.model.extend;
+package com.kakaopay.pretest.model.response;
 
 import com.kakaopay.pretest.model.AbstractResponse;
 import com.kakaopay.pretest.model.ResponseHeader;
@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.kakaopay.pretest.constants.ParameterCode.SEPARATOR_COMMA;
 import static com.kakaopay.pretest.constants.ResponseCode.ERROR_WRONG_PARAMETER;
 import static com.kakaopay.pretest.constants.ResponseCode.SUCCESS;
 
@@ -24,8 +27,20 @@ public class SummaryEcotourismResponse extends AbstractResponse {
             return;
         }
 
-        for (Ecotourism ecotourism : ecotourismList) {
-            resultList.add(new SearchResult(ecotourism));
+        Map<String, List<Ecotourism>> tourKeyExceptThemeMap = ecotourismList.stream().collect(Collectors.groupingBy(ecotourism -> ecotourism.getTourKeyExceptTheme()));
+
+        for (String tourKeyExceptTheme : tourKeyExceptThemeMap.keySet()) {
+            SearchResult searchResult = null;
+
+            for (Ecotourism ecotourism : tourKeyExceptThemeMap.get(tourKeyExceptTheme)) {
+                if (searchResult == null) {
+                    searchResult = new SearchResult(ecotourism);
+                } else {
+                    searchResult.addTheme(ecotourism.getTheme().getName());
+                }
+            }
+
+            resultList.add(searchResult);
         }
 
         this.resultCode = SUCCESS.getResultCode();
@@ -42,6 +57,10 @@ public class SummaryEcotourismResponse extends AbstractResponse {
             this.region = ecotourism.getRegion().getPublicIdentifyCode();
             this.programName = ecotourism.getProgram().getName();
             this.theme = ecotourism.getTheme().getName();
+        }
+
+        public void addTheme(String theme) {
+            this.theme = this.theme + SEPARATOR_COMMA + theme;
         }
     }
 }
