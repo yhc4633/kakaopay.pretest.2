@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 
+import static com.kakaopay.pretest.constants.ParameterCode.*;
+
 @Data
 @Entity
 @Table(name = "program")
@@ -22,11 +24,11 @@ public class Program implements CommonEntity {
 
     @Transient
     @Setter(AccessLevel.NONE)
-    private int introWeightPercentage = 30;
+    private float introWeightPercentage = 30;
 
     @Transient
     @Setter(AccessLevel.NONE)
-    private int detailWeightPercentage = 20;
+    private float detailWeightPercentage = 20;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +48,7 @@ public class Program implements CommonEntity {
 
     @Override
     public String getPublicIdentifyCode() {
-        return "prgm_" + getProgramCode();
+        return PROGRAM_CODE_PREFIX + getProgramCode();
     }
 
     public boolean isSameProgram(Program program) {
@@ -61,10 +63,10 @@ public class Program implements CommonEntity {
 
     public float calculateProgramWeightScore(String recommendKeyword) {
         int matchIntroCount = StringUtils.countMatches(getIntro(), recommendKeyword);
-        float introScore = matchIntroCount * getIntroWeightPercentage() / 100;
+        float introScore = ((float) matchIntroCount) * getIntroWeightPercentage() / PERCENTAGE_STANDARD;
 
         int matchDetailCount = StringUtils.countMatches(getDetail(), recommendKeyword);
-        float detailScore = matchDetailCount * getIntroWeightPercentage() / 100;
+        float detailScore = ((float) matchDetailCount) * getIntroWeightPercentage() / PERCENTAGE_STANDARD;
 
         return introScore + detailScore;
     }

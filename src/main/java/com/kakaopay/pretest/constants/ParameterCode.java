@@ -13,13 +13,16 @@ public class ParameterCode {
 
     public static final int SINGLE_REGION_COUNT = 1;
 
-    public static final String SEPARATOR_BAR = "|";
+    public static final float PERCENTAGE_STANDARD = 100;
+
     public static final String SEPARATOR_COMMA = ",";
     public static final String SEPARATOR_SPACE = " ";
     public static final String SEPARATOR_WAVE = "~";
 
     public static final String ECOTOURISM_CODE_PREFIX = "ectr_";
     public static final String REGION_CODE_PREFIX = "reg_";
+    public static final String THEME_CODE_PREFIX = "thm_";
+    public static final String PROGRAM_CODE_PREFIX = "prgm_";
 
     public static class Headers {
         public static final String TRANSACTION_ID = "transactionId";

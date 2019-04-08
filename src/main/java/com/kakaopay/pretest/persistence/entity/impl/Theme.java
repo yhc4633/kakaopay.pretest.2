@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 
+import static com.kakaopay.pretest.constants.ParameterCode.*;
+
 @Data
 @Entity
 @Table(name = "theme")
@@ -20,7 +22,7 @@ public class Theme implements CommonEntity {
 
     @Transient
     @Setter(AccessLevel.NONE)
-    private int nameWeightPercentage = 50;
+    private float nameWeightPercentage = 50;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +34,12 @@ public class Theme implements CommonEntity {
 
     @Override
     public String getPublicIdentifyCode() {
-        return "thm_" + getThemeCode();
+        return THEME_CODE_PREFIX + getThemeCode();
     }
 
     public float calculateThemeWeightScore(String recommendKeyword) {
         int matchNameCount = StringUtils.countMatches(getName(), recommendKeyword);
 
-        return matchNameCount * getNameWeightPercentage() / 100;
+        return ((float) matchNameCount) * getNameWeightPercentage() / PERCENTAGE_STANDARD;
     }
 }
