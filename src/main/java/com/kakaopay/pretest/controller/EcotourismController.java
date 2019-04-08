@@ -80,5 +80,12 @@ public class EcotourismController {
         return new FrequentEcotourismProgramDetailResponse(new ResponseHeader(transactionId, SUCCESS), programDetailKeyword, count);
     }
 
+    @GetMapping(value = "/tour/search", params = {"regionKeyword", "recommendKeyword"})
+    public EcotourismRecommendResponse searchRecommendEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
+                                                                 @RequestParam(value = "regionKeyword", defaultValue = "") String regionKeyword,
+                                                                 @RequestParam(value = "recommendKeyword", defaultValue = "") String recommendKeyword) {
+        Ecotourism ecotourism = (Ecotourism) ecotourismService.getTourByRecommend(regionKeyword, recommendKeyword);
 
+        return new EcotourismRecommendResponse(new ResponseHeader(transactionId, SUCCESS), ecotourism);
+    }
 }

@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 import static com.kakaopay.pretest.constants.ParameterCode.*;
@@ -164,10 +165,10 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
 
         // 제외된 지역, 테마, 프로그램은 다른 데이터의 사용여부 확인 후 잔존 or 제거
         List<Region> removeTargetRegionList = getRemoveTargetRegionList(ecotourism.getRegionList(), newRegionList);
-        regionRepositoryCustom.deleteRegionListIfNotUsing(removeTargetRegionList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(removeTargetRegionList));
+        regionRepositoryCustom.deleteRegionListIfNotUsing(removeTargetRegionList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionListIn(removeTargetRegionList));
 
         List<Theme> removeTargetThemeList = getRemoveTargetThemeList(ecotourism.getThemeList(), newThemeList);
-        themeRepositoryCustom.deleteThemeListIfNotUsing(removeTargetThemeList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeList(removeTargetThemeList));
+        themeRepositoryCustom.deleteThemeListIfNotUsing(removeTargetThemeList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeListIn(removeTargetThemeList));
 
         if (removeTargetProgram.isSameProgram(newProgram) == false) {
             programRepositoryCustom.deleteProgramIfNotUsing(removeTargetProgram, ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(removeTargetProgram));
@@ -218,7 +219,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
     }
 
     private List<Ecotourism> findEcotourismListByRegionList(List<Region> regionList) {
-        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(regionList);
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionListIn(regionList);
 
         return ecotourismList == null ? Collections.EMPTY_LIST : ecotourismList;
     }
@@ -281,5 +282,22 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         }
 
         return count;
+    }
+
+    @Override
+    public Ecotourism getTourByRecommend(String regionKeyword, String recommendKeyword) {
+        if (StringUtils.isBlank(recommendKeyword)) {
+            return null;
+        }
+
+        List<Ecotourism> ecotourismList = getTourListByRegionKeyword(regionKeyword);
+
+        if (CollectionUtils.isEmpty(ecotourismList)) {
+            return null;
+        }
+
+        ecotourismList.forEach(ecotourism -> ecotourism.calculateThemeAndProgramWeightScore(recommendKeyword));
+
+        return new PriorityQueue<>(ecotourismList).poll();
     }
 }

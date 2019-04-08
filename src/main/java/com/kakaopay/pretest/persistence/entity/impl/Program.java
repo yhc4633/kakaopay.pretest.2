@@ -1,8 +1,10 @@
 package com.kakaopay.pretest.persistence.entity.impl;
 
 import com.kakaopay.pretest.persistence.entity.CommonEntity;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
@@ -17,6 +19,14 @@ public class Program implements CommonEntity {
         this.intro = intro;
         this.detail = detail;
     }
+
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private int introWeightPercentage = 30;
+
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private int detailWeightPercentage = 20;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,5 +57,15 @@ public class Program implements CommonEntity {
         return StringUtils.equals(getName(), program.getName())
                 && StringUtils.equals(getIntro(), program.getIntro())
                 && StringUtils.equals(getDetail(), program.getDetail());
+    }
+
+    public float calculateProgramWeightScore(String recommendKeyword) {
+        int matchIntroCount = StringUtils.countMatches(getIntro(), recommendKeyword);
+        float introScore = matchIntroCount * getIntroWeightPercentage() / 100;
+
+        int matchDetailCount = StringUtils.countMatches(getDetail(), recommendKeyword);
+        float detailScore = matchDetailCount * getIntroWeightPercentage() / 100;
+
+        return introScore + detailScore;
     }
 }

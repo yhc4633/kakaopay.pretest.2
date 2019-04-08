@@ -12,4 +12,5 @@ public interface TourService<T> {
     List<T> getTourListByRegionKeyword(String regionKeyword);
     List<T> getTourListByProgramIntroKeyword(String programIntroKeyword);
     Integer getFrequencyInProgramDetail(String programDetailKeyword);
+    T getTourByRecommend(String regionKeyword, String recommendKeyword);
 }

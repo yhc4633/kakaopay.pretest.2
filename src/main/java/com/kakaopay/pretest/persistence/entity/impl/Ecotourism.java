@@ -1,8 +1,10 @@
 package com.kakaopay.pretest.persistence.entity.impl;
 
 import com.kakaopay.pretest.persistence.entity.CommonEntity;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -14,12 +16,16 @@ import static com.kakaopay.pretest.constants.ParameterCode.*;
 @Entity
 @Table(name = "ecotourism")
 @NoArgsConstructor
-public class Ecotourism implements CommonEntity {
+public class Ecotourism implements CommonEntity, Comparable<Ecotourism> {
     public Ecotourism(List<Region> region, List<Theme> theme, Program program) {
         this.regionList = region;
         this.themeList = theme;
         this.program = program;
     }
+
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private float themeAndProgramWeightScore = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +46,25 @@ public class Ecotourism implements CommonEntity {
     @Override
     public String getPublicIdentifyCode() {
         return ECOTOURISM_CODE_PREFIX + getEcotourismCode();
+    }
+
+    @Override
+    public int compareTo(Ecotourism ecotourism) {
+        if (getThemeAndProgramWeightScore() < ecotourism.getThemeAndProgramWeightScore()) {
+            return 1;
+        } else if (getThemeAndProgramWeightScore() > ecotourism.getThemeAndProgramWeightScore()) {
+            return -1;
+        }
+        return 0;
+    }
+
+    public void calculateThemeAndProgramWeightScore(String recommendKeyword) {
+        float themeScore = 0;
+
+        for (Theme theme : getThemeList()) {
+            themeScore += theme.calculateThemeWeightScore(recommendKeyword);
+        }
+
+        this.themeAndProgramWeightScore = themeScore + getProgram().calculateProgramWeightScore(recommendKeyword);
     }
 }
