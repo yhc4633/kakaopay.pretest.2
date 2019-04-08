@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 
@@ -31,11 +33,13 @@ public class Ecotourism implements CommonEntity, Comparable<Ecotourism> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ecotourismCode;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinTable(name = "ecotourism_region", joinColumns = @JoinColumn(name ="ecotourism_code"), inverseJoinColumns = @JoinColumn(name ="region_code"))
     private List<Region> regionList;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @LazyCollection(LazyCollectionOption.FALSE)
     @JoinTable(name = "ecotourism_theme", joinColumns = @JoinColumn(name ="ecotourism_code"), inverseJoinColumns = @JoinColumn(name ="theme_code"))
     private List<Theme> themeList;
 

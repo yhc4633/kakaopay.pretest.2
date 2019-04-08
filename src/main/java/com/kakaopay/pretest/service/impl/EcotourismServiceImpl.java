@@ -151,9 +151,11 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         }
 
         // 지역, 테마, 프로그램 업데이트. 단순 추가, 바뀐 경우 insert
+        List<Region> originRegionList = ecotourism.getRegionList();
         List<Region> newRegionList = saveRegionsIfNotExist(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX]);
         ecotourism.setRegionList(newRegionList);
 
+        List<Theme> originThemeList = ecotourism.getThemeList();
         List<Theme> newThemeList = saveThemesIfNotExist(ecotourismArr[TOUR_INFO_ARR_THEME_INDEX]);
         ecotourism.setThemeList(newThemeList);
 
@@ -161,13 +163,13 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         Program newProgram = saveProgramIfNotExist(ecotourismArr);
         ecotourism.setProgram(newProgram);
 
-        ecotourismRepositoryCustom.getEcotourismRepository().save(ecotourism);
+        ecotourismRepositoryCustom.getEcotourismRepository().saveAndFlush(ecotourism);
 
         // 제외된 지역, 테마, 프로그램은 다른 데이터의 사용여부 확인 후 잔존 or 제거
-        List<Region> removeTargetRegionList = getRemoveTargetRegionList(ecotourism.getRegionList(), newRegionList);
+        List<Region> removeTargetRegionList = getRemoveTargetRegionList(originRegionList, newRegionList);
         regionRepositoryCustom.deleteRegionListIfNotUsing(removeTargetRegionList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionListIn(removeTargetRegionList));
 
-        List<Theme> removeTargetThemeList = getRemoveTargetThemeList(ecotourism.getThemeList(), newThemeList);
+        List<Theme> removeTargetThemeList = getRemoveTargetThemeList(originThemeList, newThemeList);
         themeRepositoryCustom.deleteThemeListIfNotUsing(removeTargetThemeList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeListIn(removeTargetThemeList));
 
         if (removeTargetProgram.isSameProgram(newProgram) == false) {

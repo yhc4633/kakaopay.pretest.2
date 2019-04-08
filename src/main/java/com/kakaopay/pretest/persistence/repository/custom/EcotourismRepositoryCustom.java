@@ -25,6 +25,6 @@ public class EcotourismRepositoryCustom implements CommonProcess<Ecotourism> {
             return searchedEcotourism;
         }
 
-        return ecotourismRepository.save(ecotourism);
+        return ecotourismRepository.saveAndFlush(ecotourism);
     }
 }
