@@ -3,8 +3,13 @@ package com.kakaopay.pretest.service;
 import com.kakaopay.pretest.StartApplicationServer;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.persistence.repository.EcotourismRepository;
+import com.kakaopay.pretest.persistence.repository.custom.EcotourismRepositoryCustom;
+import com.kakaopay.pretest.persistence.repository.custom.ProgramRepositoryCustom;
+import com.kakaopay.pretest.persistence.repository.custom.RegionRepositoryCustom;
+import com.kakaopay.pretest.persistence.repository.custom.ThemeRepositoryCustom;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,13 +40,30 @@ public class EcotorismServiceImplTest {
     private TourService ecotourismService;
 
     @Autowired
-    private EcotourismRepository ecotourismRepository;
+    private EcotourismRepositoryCustom ecotourismRepositoryCustom;
+
+    @Autowired
+    private RegionRepositoryCustom regionRepositoryCustom;
+
+    @Autowired
+    private ThemeRepositoryCustom themeRepositoryCustom;
+
+    @Autowired
+    private ProgramRepositoryCustom programRepositoryCustom;
+
+    @After
+    public void removeAllData() {
+        ecotourismRepositoryCustom.getEcotourismRepository().deleteAll();
+        regionRepositoryCustom.getRegionRepository().deleteAll();
+        themeRepositoryCustom.getThemeRepository().deleteAll();
+        programRepositoryCustom.getProgramRepository().deleteAll();
+    }
 
     // NOTE : 테스트 파일의 데이터 row 수 변경 시 변경 필요
     private final int TEST_FILE_SIZE = 110;
 
-    @Before
-    public void initialize() {
+    @Test
+    public void test_upload_file() {
         BufferedReader br = null;
 
         try {
@@ -50,6 +72,10 @@ public class EcotorismServiceImplTest {
             MultipartFile multipartFile = new MockMultipartFile("testFile", file.getName(), "text/plain", IOUtils.toByteArray(input));
 
             ecotourismService.uploadFile(multipartFile);
+
+            List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAll();
+
+            assertThat(ecotourismList.size(), is(TEST_FILE_SIZE));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -64,36 +90,45 @@ public class EcotorismServiceImplTest {
     }
 
     @Test
-    public void test_upload_file() {
-        List<Ecotourism> ecotourismList = ecotourismRepository.findAll();
-
-        assertThat(ecotourismList.size(), is(TEST_FILE_SIZE));
-    }
-
-    @Test
     public void test_add_tour() {
-        String[] ecotourismArr = {"1", "직업을 겪어보자", "직업 체험", "경기도 성남시 판교", "직업 체험 프로그램", "직업을 체험합니다"};
+        String[] ecotourismArr = getEcotourismArr();
 
         ecotourismService.addTour(ecotourismArr);
 
-        List<Ecotourism> ecotourismList = ecotourismRepository.findAll();
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAll();
 
         Ecotourism ecotourism = ecotourismList.get(ecotourismList.size()-1);
 
-        assertThat(ecotourismList.size(), is(TEST_FILE_SIZE + 1));
+        assertThat(ecotourismList.size(), is(1));
         assertThat(ecotourism.getProgram().getName(), is("직업을 겪어보자"));
+    }
+
+    private String[] getEcotourismArr() {
+        String[] ecotourismArr = {"1", "직업을 겪어보자", "직업 체험", "경기도 성남시 판교", "직업 체험 프로그램", "직업을 체험합니다"};
+        return ecotourismArr;
     }
 
     @Test
     public void test_modify_tour() {
-        List<Ecotourism> ecotourismList = ecotourismRepository.findAll();
+        String[] ecotourismArr = getEcotourismArr();
+
+        ecotourismService.addTour(ecotourismArr);
+
+        List<Ecotourism> ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAll();
+
 
         Ecotourism originEcotourism = ecotourismList.get(0);
 
+        String[] modifyEcotourismArr = {originEcotourism.getPublicIdentifyCode(), "직업을 겪어보자2", "직업 체험2", "경기도 성남시 판교2", "직업 체험 프로그램2", "직업을 체험합니다2"};
 
 
+        ecotourismService.modifyTour(modifyEcotourismArr);
 
+        ecotourismList = ecotourismRepositoryCustom.getEcotourismRepository().findAll();
 
+        Ecotourism modifiedEcotourism = ecotourismList.get(0);
+
+        assertThat(originEcotourism.getPublicIdentifyCode(), is(modifiedEcotourism.getPublicIdentifyCode()));
     }
 
     @Test

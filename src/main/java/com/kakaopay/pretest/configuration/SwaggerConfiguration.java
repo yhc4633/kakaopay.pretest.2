@@ -21,18 +21,18 @@ import java.util.Collections;
 public class SwaggerConfiguration {
     @Bean
     public Docket api(){
-        return new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.SWAGGER_12)
                 .select()
                 .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(apiInfo()).enableUrlTemplating(true);
+                .apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
         Contact contact = new Contact("Hyungcheol-Yoon","","yhc4633@hanmail.net");
         ApiInfo apiInfo = new ApiInfo(
-                "Kakaopay Preteste 2",
+                "Kakaopay Pretest 2",
                 "Kakaopay Pretest 2. Ecotourism API Server",
                 "1.0.0",
                 "",
