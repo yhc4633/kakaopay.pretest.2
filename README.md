@@ -1,10 +1,156 @@
-개발 프레임 워크
+## 개발 프레임 워크
+> spring boot - 1.5.19.RELEASE
 
-spring boot - 1.5.19.RELEASE
+***
 
-문제해결 전략
+## 문제해결 전략
 
+***
 
+### 1) 데이터 구조
+- *생태 관광*, *지역*, *테마*, *프로그램*으로 엔터티 구분
 
-빌드 및 실행 방법
+- 엔터티
+<pre><code>
+Ecotourism
+    ecotourism_code | program_code
+    
+Region
+    region_code | do | si | goon | gu | myun | ri | eub | dong | etc
 
+Theme
+    theme_code | name
+
+Program
+    program_code | name | intro | detail
+    
+Ecotourism_Region
+    ecotourism_code | region_code
+ 
+Ecotourism_Theme
+    ecotourism_code | theme_code
+</code></pre>
+
+- 관계
+1. Ecotourism : Region = N : N
+2. Ecotourism : Theme = N : N
+3. Ecotourism : Program = N : 1
+
+### 2) API 개발
+#### 1. 데이터 파일을 통해 저장 api
+- 파일 row를 지역, 테마, 프로그램으로 분류 해 저장
+- 지역 저장 시 시, 군, 구 등 세분화 하여 저장. 중복 확인
+- 테마 저장 시 중복 확인
+- 프로그램 저장 시 이름, 소개, 상세 설명을 묶어 하나의 프로그램으로 간주
+
+#### 2. 테이터 조회 api
+- 지역 코드를 이용해 지역 정보 조회
+- 해당 지역 정보를 사용하는 프로그램 정보들 조회
+
+#### 3. 테이터 추가 api
+- 파일로 받았던 각 row를 개별로 받는 개념
+- 개별 저장 시의 메인 로직은 파일로 저장 시와 동일
+
+#### 4. 테이터 수정 api
+- 수정 시 관광 고유 코드를 반드시 인자로 전달
+- 등록시 입력한 모든 정보를 수정 할 수 있다
+- 지역 및 테마는 새로 추가된 정보를 db 등록, 제외 된 정보를 다른 사용 처 확인 후 없으면 제거 
+- 프로그램은 수정 발생 시 해당 관광 정보만 사용하는 프로그램이면 db 업데이트, 다른 관광 정보도 사용 시 db 등록 
+
+#### 5. 서비스 지역 키워드로 프로그램명, 테마 출력 api
+- 
+
+#### 6. 프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api
+
+#### 7. 프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api
+
+#### 8. 지역명, 관광 키워드로 추천 프로그램 코드 출력 api 
+
+***
+
+## 빌드 및 실행 방법
+
+#### 하위 정보 추가 후 빌드 및 서버 실행
+<pre><code>
+[local build 시]
+ Arguments
+ -Pprofile=local
+ 
+[local 실행 시]
+ VM Options
+ -Dspring.profiles.active=local
+ 
+ Program Arguments
+ --spring.profiles.active=local
+</code></pre>
+
+#### 헤더 정보
+> Content-Type : application/json
+
+#### 1. 데이터 파일을 통해 저장 api
+##### URL
+> POST<br>
+> localhost:10080/ecotourism/file/register
+
+##### Parameter
+> ecotourismFile : multipart form data 형식으로 전달할 csv 파일
+#### 2. 테이터 조회 api
+##### URL
+> GET<br>
+> localhost:10080/ecotourism/tour/search
+
+##### Parameter
+> regionCode : 지역 코드. `reg_숫자` 형식 엄수.
+#### 3. 테이터 추가 api
+##### URL
+> POST<br>
+> localhost:10080/ecotourism/tour/register
+
+##### Parameter
+> programName : 프로그램 명. 빈 값이 오면 안됩니다.<br>
+> theme : 테마 명. 빈 값이 오면 안됩니다.<br>
+> region : 지역 명. 빈 값이 오면 안됩니다.<br>
+> programIntro : 프로그램 소개<br>
+> programDetail : 프로그램 상세정보<br>
+#### 4. 테이터 수정 api
+> PUT<br>
+> localhost:10080/ecotourism/tour/modify
+
+##### Parameter
+> ecotourismCode : 생태 관광 코드. `ectr_숫자` 형식 엄수. 조회 api로 확인 가능.<br>
+> programName : 프로그램 명. 빈 값이 오면 안됩니다.<br>
+> theme : 테마 명. 빈 값이 오면 안됩니다.<br>
+> region : 지역 명. 빈 값이 오면 안됩니다.<br>
+> programIntro : 프로그램 소개<br>
+> programDetail : 프로그램 상세정보<br>
+
+#### 5. 서비스 지역 키워드로 프로그램명, 테마 출력 api
+> GET<br>
+> localhost:10080/ecotourism/tour/search
+
+##### Parameter
+> regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...)
+
+#### 6. 프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api
+> GET<br>
+> localhost:10080/ecotourism/tour/search
+
+##### Parameter
+> programIntroKeyword : 프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)
+
+#### 7. 프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api
+> GET<br>
+> localhost:10080/ecotourism/tour/search
+
+##### Parameter
+> programDetailKeyword : 프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)
+
+#### 8. 지역명, 관광 키워드로 추천 프로그램 코드 출력 api 
+> GET<br>
+> localhost:10080/ecotourism/tour/search
+
+##### Parameter
+> regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...) <br>
+> recommendKeyword : 검색하고 싶은 키워드 (ex : 국립공원, 체험...)
+
+#### ※ 간편한 조회가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다.
