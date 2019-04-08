@@ -1,5 +1,6 @@
 package com.kakaopay.pretest.persistence.repository.custom;
 
+import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.persistence.entity.impl.Region;
 import com.kakaopay.pretest.persistence.repository.CommonProcess;
 import com.kakaopay.pretest.persistence.repository.RegionRepository;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -76,5 +78,11 @@ public class RegionRepositoryCustom implements CommonProcess<Region> {
         }
 
         return Collections.EMPTY_LIST;
+    }
+
+    public void deleteRegionListIfNotUsing(List<Region> removeTargetRegionList, List<Ecotourism> ecotourismList) {
+        if (CollectionUtils.size(removeTargetRegionList) > NumberUtils.INTEGER_ZERO && CollectionUtils.size(ecotourismList) == NumberUtils.INTEGER_ZERO) {
+            getRegionRepository().delete(removeTargetRegionList);
+        }
     }
 }

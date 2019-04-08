@@ -1,12 +1,15 @@
 package com.kakaopay.pretest.persistence.repository.custom;
 
+import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.persistence.entity.impl.Program;
+import com.kakaopay.pretest.persistence.entity.impl.Theme;
 import com.kakaopay.pretest.persistence.repository.CommonProcess;
 import com.kakaopay.pretest.persistence.repository.ProgramRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -46,5 +49,11 @@ public class ProgramRepositoryCustom implements CommonProcess<Program> {
         }
 
         return Collections.EMPTY_LIST;
+    }
+
+    public void deleteProgramIfNotUsing(Program removeTargetProgram, List<Ecotourism> ecotourismList) {
+        if (removeTargetProgram != null && CollectionUtils.size(ecotourismList) == NumberUtils.INTEGER_ZERO) {
+            getProgramRepository().delete(removeTargetProgram);
+        }
     }
 }

@@ -27,7 +27,6 @@ public class EcotourismController {
     @PostMapping(value = "/file/register")
     public RegisterEcotourismFileResponse registerFile(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                        @RequestParam(value = "ecotourismFile") MultipartFile ecotourismFile) {
-
         List<String> failedList = ecotourismService.uploadFile(ecotourismFile);
 
         return new RegisterEcotourismFileResponse(new ResponseHeader(transactionId, SUCCESS), failedList);
@@ -36,7 +35,6 @@ public class EcotourismController {
     @GetMapping(value = "/tour/search", params = {"regionCode"})
     public EcotourismResponse search(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                      @RequestParam(value = "regionCode") String regionCode) {
-
         List<Ecotourism> ecotourismList = ecotourismService.getTourListByRegionCode(regionCode);
 
         return new EcotourismResponse(new ResponseHeader(transactionId, SUCCESS), ecotourismList);
@@ -44,14 +42,8 @@ public class EcotourismController {
 
     @PostMapping(value = "/tour/register")
     public ProcessResultResponse register(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
-                                          @RequestParam(value = "programName", defaultValue = "") String programName,
-                                          @RequestParam(value = "theme", defaultValue = "") String theme,
-                                          @RequestParam(value = "region", defaultValue = "") String region,
-                                          @RequestParam(value = "programIntro", defaultValue = "") String programIntro,
-                                          @RequestParam(value = "programDetail", defaultValue = "") String programDetail) {
-        String[] tourInfoArr = {programName, theme, region, programIntro, programDetail};
-
-        int resultCode = ecotourismService.addTour(tourInfoArr);
+                                          @RequestBody ModifyEcotourismRequest modifyEcotourismRequest) {
+        int resultCode = ecotourismService.addTour(modifyEcotourismRequest.createTourInfoArr());
 
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
@@ -59,11 +51,7 @@ public class EcotourismController {
     @PutMapping(value = "/tour/modify")
     public ProcessResultResponse modifyEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                   @RequestBody ModifyEcotourismRequest modifyEcotourismRequest) {
-
-        String[] tourInfoArr = {modifyEcotourismRequest.getEcotourismCode(), modifyEcotourismRequest.getProgramName(), modifyEcotourismRequest.getTheme()
-                , modifyEcotourismRequest.getRegion(), modifyEcotourismRequest.getProgramIntro(), modifyEcotourismRequest.getProgramDetail()};
-
-        int resultCode = ecotourismService.modifyTour(tourInfoArr);
+        int resultCode = ecotourismService.modifyTour(modifyEcotourismRequest.createTourInfoArr());
 
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
@@ -87,9 +75,10 @@ public class EcotourismController {
     @GetMapping(value = "/tour/search", params = {"programDetailKeyword"})
     public FrequentEcotourismProgramDetailResponse searchProgramDetailFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                                 @RequestParam(value = "programDetailKeyword", defaultValue = "") String programDetailKeyword) {
-
         Integer count = ecotourismService.getFrequencyInProgramDetail(programDetailKeyword);
 
         return new FrequentEcotourismProgramDetailResponse(new ResponseHeader(transactionId, SUCCESS), programDetailKeyword, count);
     }
+
+
 }

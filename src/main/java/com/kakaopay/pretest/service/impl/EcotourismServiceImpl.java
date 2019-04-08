@@ -86,22 +86,11 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
-        List<Region> savedRegionList = new ArrayList<>();
-        for (String region : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
-            savedRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(region.trim())));
-        }
+        List<Region> savedRegionList = saveRegionsIfNotExist(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX]);
 
-        List<Theme> savedThemeList = new ArrayList<>();
-        for (String theme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
-            if (StringUtils.isNotEmpty(theme.trim())) {
-                savedThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme.trim())));
-            }
-        }
+        List<Theme> savedThemeList = saveThemesIfNotExist(ecotourismArr[TOUR_INFO_ARR_THEME_INDEX]);
 
-        String programName = ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX];
-        String programIntro = ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX];
-        String programDetail = ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX];
-        Program savedProgram = programRepositoryCustom.saveIfNotExist(new Program(programName, programIntro, programDetail));
+        Program savedProgram = saveProgramIfNotExist(ecotourismArr);
 
         ecotourismRepositoryCustom.saveIfNotExist(new Ecotourism(savedRegionList, savedThemeList, savedProgram));
 
@@ -116,6 +105,31 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         return true;
     }
 
+    private List<Region> saveRegionsIfNotExist(String regions) {
+        List<Region> savedRegionList = new ArrayList<>();
+        for (String region : Region.createRegionArrWithPrefix(regions)) {
+            savedRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(region.trim())));
+        }
+        return savedRegionList;
+    }
+
+    private List<Theme> saveThemesIfNotExist(String themes) {
+        List<Theme> savedThemeList = new ArrayList<>();
+        for (String theme : themes.split(SEPARATOR_COMMA)) {
+            if (StringUtils.isNotEmpty(theme.trim())) {
+                savedThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(theme.trim())));
+            }
+        }
+        return savedThemeList;
+    }
+
+    private Program saveProgramIfNotExist(String[] ecotourismArr) {
+        String programName = ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX];
+        String programIntro = ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX];
+        String programDetail = ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX];
+        return programRepositoryCustom.saveIfNotExist(new Program(programName, programIntro, programDetail));
+    }
+
     @Override
     public Integer modifyTour(String[] ecotourismArr) {
         if (isValidEcotourismArr(ecotourismArr) == false) {
@@ -123,14 +137,11 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
         }
 
         String ecotourismCode = ecotourismArr[TOUR_INFO_ARR_NUMBER_INDEX];
-        if (StringUtils.isEmpty(ecotourismCode) || StringUtils.startsWith(ecotourismCode, ECOTOURISM_CODE_PREFIX) == false) {
+        if (isValidCode(ecotourismCode, ECOTOURISM_CODE_PREFIX) == false) {
             return ERROR_WRONG_PARAMETER.getResultCode();
         }
 
         String ecotourismCodeExceptPrefix = StringUtils.replace(ecotourismCode, ECOTOURISM_CODE_PREFIX, "");
-        if (NumberUtils.isDigits(ecotourismCodeExceptPrefix) == false) {
-            return ERROR_WRONG_PARAMETER.getResultCode();
-        }
 
         Ecotourism ecotourism = ecotourismRepositoryCustom.getEcotourismRepository().findOne(NumberUtils.toLong(ecotourismCodeExceptPrefix));
 
@@ -138,71 +149,61 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
             return ERROR_NO_DATA.getResultCode();
         }
 
-        // 지역 업데이트. 단순 지역 추가 시 insert, 지역이 바뀐 경우 새 지역은 insert
-        List<Region> newRegionList = new ArrayList<>();
-        List<Region> removeTargetRegionList = new ArrayList<>(ecotourism.getRegionList());
-        for (String newRegion : Region.createRegionArrWithPrefix(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX])) {
-            newRegionList.add(regionRepositoryCustom.saveIfNotExist(new Region(newRegion.trim())));
-            removeTargetRegionList = removeTargetRegionList.stream().filter(region -> StringUtils.equals(region.toString(), newRegion) == false).collect(Collectors.toList());
-        }
+        // 지역, 테마, 프로그램 업데이트. 단순 추가, 바뀐 경우 insert
+        List<Region> newRegionList = saveRegionsIfNotExist(ecotourismArr[TOUR_INFO_ARR_REGION_INDEX]);
         ecotourism.setRegionList(newRegionList);
 
-        // 테마 업데이트. 단순 테마 추가 시 insert, 테마가 바뀐 경우 새 테마는 insert
-        List<Theme> newThemeList = new ArrayList<>();
-        List<Theme> removeTargetThemeList = new ArrayList<>(ecotourism.getThemeList());
-        for (String newTheme : ecotourismArr[TOUR_INFO_ARR_THEME_INDEX].split(SEPARATOR_COMMA)) {
-            newThemeList.add(themeRepositoryCustom.saveIfNotExist(new Theme(newTheme.trim())));
-            removeTargetThemeList = removeTargetThemeList.stream().filter(theme -> StringUtils.equals(theme.getName(), newTheme) == false).collect(Collectors.toList());
-        }
+        List<Theme> newThemeList = saveThemesIfNotExist(ecotourismArr[TOUR_INFO_ARR_THEME_INDEX]);
         ecotourism.setThemeList(newThemeList);
 
-        // 프로그램 업데이트. 해당 프로그램이 위의 데이터만 해당하면 update, 그 외에도 있으면 insert 후 매핑 변경
-        ecotourism.setProgram(renewProgram(ecotourismArr, ecotourism.getProgram()));
+        Program removeTargetProgram = ecotourism.getProgram();
+        Program newProgram = saveProgramIfNotExist(ecotourismArr);
+        ecotourism.setProgram(newProgram);
 
         ecotourismRepositoryCustom.getEcotourismRepository().save(ecotourism);
 
-        // 제외된 지역은 다른 데이터의 사용여부 확인 후 잔존 or 제거
-        if (removeTargetRegionList.size() > NumberUtils.INTEGER_ZERO && CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(removeTargetRegionList)) == NumberUtils.INTEGER_ZERO) {
-            regionRepositoryCustom.getRegionRepository().delete(removeTargetRegionList);
-        }
+        // 제외된 지역, 테마, 프로그램은 다른 데이터의 사용여부 확인 후 잔존 or 제거
+        List<Region> removeTargetRegionList = getRemoveTargetRegionList(ecotourism.getRegionList(), newRegionList);
+        regionRepositoryCustom.deleteRegionListIfNotUsing(removeTargetRegionList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByRegionList(removeTargetRegionList));
 
-        // 제외된 테마는 다른 데이터의 사용여부 확인 후 잔존 or 제거
-        if (removeTargetThemeList.size() > NumberUtils.INTEGER_ZERO && CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeList(removeTargetThemeList)) == NumberUtils.INTEGER_ZERO) {
-            themeRepositoryCustom.getThemeRepository().delete(removeTargetThemeList);
+        List<Theme> removeTargetThemeList = getRemoveTargetThemeList(ecotourism.getThemeList(), newThemeList);
+        themeRepositoryCustom.deleteThemeListIfNotUsing(removeTargetThemeList, ecotourismRepositoryCustom.getEcotourismRepository().findAllByThemeList(removeTargetThemeList));
+
+        if (removeTargetProgram.isSameProgram(newProgram) == false) {
+            programRepositoryCustom.deleteProgramIfNotUsing(removeTargetProgram, ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(removeTargetProgram));
         }
 
         return SUCCESS.getResultCode();
     }
 
-    private Program renewProgram(String[] ecotourismArr, Program program) {
-        String programName = ecotourismArr[TOUR_INFO_ARR_PROGRAM_NAME_INDEX];
-        String programIntro = ecotourismArr[TOUR_INFO_ARR_PROGRAM_INTRO_INDEX];
-        String programDetail = ecotourismArr[TOUR_INFO_ARR_PROGRAM_DETAIL_INDEX];
-        if (program.isSameProgram(programName, programIntro, programDetail)) {
-            return program;
-        }
+    private boolean isValidCode(String code, String codePrefix) {
+        return StringUtils.isNotBlank(code) && StringUtils.startsWith(code, codePrefix)
+                && NumberUtils.isDigits(StringUtils.replace(code, codePrefix, ""));
+    }
 
-        // 해당 프로그램을 2개 이상의 관광 정보가 사용하는 경우 새로 추가
-        if (CollectionUtils.size(ecotourismRepositoryCustom.getEcotourismRepository().findAllByProgram(program)) > NumberUtils.INTEGER_ONE) {
-            return programRepositoryCustom.saveIfNotExist(new Program(programName, programIntro, programDetail));
+    private List<Region> getRemoveTargetRegionList(List<Region> originRegionList, List<Region> newRegionList) {
+        List<Region> removeTargetRegionList = new ArrayList<>(originRegionList);
+        for (Region newRegion : newRegionList) {
+            removeTargetRegionList = removeTargetRegionList.stream().filter(originRegion -> StringUtils.equals(originRegion.toString(), newRegion.toString()) == false).collect(Collectors.toList());
         }
+        return removeTargetRegionList;
+    }
 
-        program.setName(programName);
-        program.setIntro(programIntro);
-        program.setDetail(programDetail);
-        return programRepositoryCustom.getProgramRepository().save(program);
+    private List<Theme> getRemoveTargetThemeList(List<Theme> originThemeList, List<Theme> newThemeList) {
+        List<Theme> removeTargetThemeList = new ArrayList<>(originThemeList);
+        for (Theme newTheme : newThemeList) {
+            removeTargetThemeList = removeTargetThemeList.stream().filter(originTheme -> StringUtils.equals(originTheme.getName(), newTheme.getName()) == false).collect(Collectors.toList());
+        }
+        return removeTargetThemeList;
     }
 
     @Override
     public List<Ecotourism> getTourListByRegionCode(String regionCode) {
-        if (StringUtils.isEmpty(regionCode) || StringUtils.startsWith(regionCode,REGION_CODE_PREFIX) == false) {
+        if (isValidCode(regionCode, REGION_CODE_PREFIX) == false) {
             return null;
         }
 
         String regionCodeExceptPrefix = StringUtils.replace(regionCode, REGION_CODE_PREFIX, "");
-        if (NumberUtils.isDigits(regionCodeExceptPrefix) == false) {
-            return null;
-        }
 
         Region region = regionRepositoryCustom.getRegionRepository().findOne(NumberUtils.toLong(regionCodeExceptPrefix));
 
@@ -224,7 +225,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
 
     @Override
     public List<Ecotourism> getTourListByRegionKeyword(String regionKeyword) {
-        if (regionKeyword == null) {
+        if (StringUtils.isBlank(regionKeyword)) {
             return null;
         }
 
@@ -269,7 +270,7 @@ public class EcotourismServiceImpl implements TourService<Ecotourism> {
 
     @Override
     public Integer getFrequencyInProgramDetail(String programDetailKeyword) {
-        if (StringUtils.isEmpty(programDetailKeyword)) {
+        if (StringUtils.isBlank(programDetailKeyword)) {
             return null;
         }
 

@@ -39,9 +39,13 @@ public class Program implements CommonEntity {
         return "prgm_" + getProgramCode();
     }
 
-    public boolean isSameProgram(String name, String intro, String detail) {
-        return StringUtils.equals(getName(), name)
-                && StringUtils.equals(getIntro(), intro)
-                && StringUtils.equals(getDetail(), detail);
+    public boolean isSameProgram(Program program) {
+        if (program == null) {
+            return false;
+        }
+
+        return StringUtils.equals(getName(), program.getName())
+                && StringUtils.equals(getIntro(), program.getIntro())
+                && StringUtils.equals(getDetail(), program.getDetail());
     }
 }
