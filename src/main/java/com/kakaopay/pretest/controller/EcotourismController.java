@@ -28,8 +28,8 @@ public class EcotourismController {
     @Qualifier("ecotourismService")
     private final TourService ecotourismService;
 
-    @ApiOperation(value = "registerFile", notes = "데이터 파일을 통해 저장 api")
     @PostMapping(value = "/file/register")
+    @ApiOperation(value = "registerFile", notes = "데이터 파일을 통해 저장 api")
     public RegisterEcotourismFileResponse registerFile(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                        @RequestHeader(value = AUTHORIZATION) String authorization,
                                                        @RequestParam(value = "ecotourismFile") MultipartFile ecotourismFile) {
@@ -38,8 +38,8 @@ public class EcotourismController {
         return new RegisterEcotourismFileResponse(new ResponseHeader(transactionId, SUCCESS), failedList);
     }
 
-    @ApiOperation(value = "search", notes = "테이터 조회 api")
     @GetMapping(value = "/tour/search", params = {"regionCode"})
+    @ApiOperation(value = "search", notes = "테이터 조회 api")
     public EcotourismResponse search(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                      @RequestHeader(value = AUTHORIZATION) String authorization,
                                      @RequestParam(value = "regionCode") String regionCode) {
@@ -68,7 +68,7 @@ public class EcotourismController {
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
 
-    @GetMapping(value = "/tour/search", params = {"regionKeyword"})
+    @GetMapping(value = "/tour/summary", params = {"regionKeyword"})
     @ApiOperation(value = "searchSummary", notes = "서비스 지역 키워드로 프로그램명, 테마 출력 api")
     public SummaryEcotourismResponse searchSummary(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                    @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -78,7 +78,7 @@ public class EcotourismController {
         return new SummaryEcotourismResponse(new ResponseHeader(transactionId, SUCCESS), ecotourismList);
     }
 
-    @GetMapping(value = "/tour/search", params = {"programIntroKeyword"})
+    @GetMapping(value = "/tour/frequency", params = {"programIntroKeyword"})
     @ApiOperation(value = "searchRegionFrequency", notes = "프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api")
     public FrequentEcotourismRegionResponse searchRegionFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                   @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -88,7 +88,7 @@ public class EcotourismController {
         return new FrequentEcotourismRegionResponse(new ResponseHeader(transactionId, SUCCESS), programIntroKeyword, ecotourismList);
     }
 
-    @GetMapping(value = "/tour/search", params = {"programDetailKeyword"})
+    @GetMapping(value = "/program/frequency", params = {"programDetailKeyword"})
     @ApiOperation(value = "searchProgramDetailFrequency", notes = "프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api")
     public FrequentEcotourismProgramDetailResponse searchProgramDetailFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                                 @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -98,7 +98,7 @@ public class EcotourismController {
         return new FrequentEcotourismProgramDetailResponse(new ResponseHeader(transactionId, SUCCESS), programDetailKeyword, count);
     }
 
-    @GetMapping(value = "/tour/search", params = {"regionKeyword", "recommendKeyword"})
+    @GetMapping(value = "/tour/recommend", params = {"regionKeyword", "recommendKeyword"})
     @ApiOperation(value = "searchRecommendEcotourism", notes = "지역명, 관광 키워드로 추천 프로그램 코드 출력 api")
     public EcotourismRecommendResponse searchRecommendEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                  @RequestHeader(value = AUTHORIZATION) String authorization,

@@ -21,7 +21,8 @@ import java.util.Collections;
 public class SwaggerConfiguration {
     @Bean
     public Docket api(){
-        return new Docket(DocumentationType.SWAGGER_12)
+        return new Docket(DocumentationType.SWAGGER_2)
+                .useDefaultResponseMessages(false)
                 .select()
                 .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework.boot")))
                 .paths(PathSelectors.any())

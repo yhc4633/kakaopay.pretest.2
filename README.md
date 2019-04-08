@@ -133,7 +133,7 @@ Ecotourism_Theme
 #### 5. 서비스 지역 키워드로 프로그램명, 테마 출력 api
 ##### URL
 > GET<br>
-> localhost:10080/ecotourism/tour/search
+> localhost:10080/ecotourism/tour/summary
 
 ##### Parameter
 > regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...)
@@ -141,7 +141,7 @@ Ecotourism_Theme
 #### 6. 프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api
 ##### URL
 > GET<br>
-> localhost:10080/ecotourism/tour/search
+> localhost:10080/ecotourism/tour/frequency
 
 ##### Parameter
 > programIntroKeyword : 프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)
@@ -149,7 +149,7 @@ Ecotourism_Theme
 #### 7. 프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api
 ##### URL
 > GET<br>
-> localhost:10080/ecotourism/tour/search
+> localhost:10080/ecotourism/program/frequency
 
 ##### Parameter
 > programDetailKeyword : 프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)
@@ -157,7 +157,7 @@ Ecotourism_Theme
 #### 8. 지역명, 관광 키워드로 추천 프로그램 코드 출력 api
 ##### URL
 > GET<br>
-> localhost:10080/ecotourism/tour/search
+> localhost:10080/ecotourism/tour/recommend
 
 ##### Parameter
 > regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...) <br>

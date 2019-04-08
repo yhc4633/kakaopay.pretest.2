@@ -4,6 +4,7 @@ import com.kakaopay.pretest.model.ResponseHeader;
 import com.kakaopay.pretest.model.response.SignResponse;
 import com.kakaopay.pretest.service.CertificationService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ public class CertificationController {
     private final CertificationService jwtCertificationService;
 
     @PostMapping(value = "/signup")
+    @ApiOperation(value = "signup", notes = "회원 가입 후 토큰 발급 api")
     public SignResponse signUp(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                @RequestParam(value = "id") String id,
                                @RequestParam(value = "password") String password) {
@@ -32,6 +34,7 @@ public class CertificationController {
     }
 
     @PostMapping(value = "/signin")
+    @ApiOperation(value = "signin", notes = "회원 정보 인증 후 토큰 발급 api")
     public SignResponse signIn(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                @RequestParam(value = "id") String id,
                                @RequestParam(value = "password") String password) {
@@ -41,6 +44,7 @@ public class CertificationController {
     }
 
     @PutMapping(value = "/refresh")
+    @ApiOperation(value = "refresh", notes = "기존 토큰 확인 후 신규 토큰 발급 api")
     public SignResponse refresh(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                 @RequestHeader(value = AUTHORIZATION) String authorization,
                                 @RequestHeader(value = TOKEN) String token) {
