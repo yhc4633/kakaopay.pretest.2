@@ -137,4 +137,4 @@ start-kakaopay_pretest_2.sh 파일 실행
 | 프로그램 상세 정보로 출현 빈도 수 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/program/frequency | -programDetailKeyword (프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)) : string | -resultCode : int <br> -programDetailKeyword : string <br> -count : int |
 | 프로그램 상세 정보로 출현 빈도 수 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/recommend | -regionKeyword (조회할 지역 키워드. (ex: 평창군, 경기도...)) : string <br> -recommendKeyword : string (검색하고 싶은 키워드 (ex : 국립공원, 체험...)) | -resultCode : int <br> -ecotourismCode : string |
 
-#### ※ 간편한 테스트가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다.
+#### ※ 간편한 테스트가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다. (로컬 pc 예시. 특정 서버 이용 시 localhost에 ip 입력)
