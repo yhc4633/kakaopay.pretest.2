@@ -1,5 +1,6 @@
 ## 개발 프레임 워크
 > spring boot - 1.5.19.RELEASE
+> java 1.8
 
 ## 문제해결 전략
 
@@ -65,7 +66,7 @@ Ecotourism_Theme
 
 #### 5. 서비스 지역 키워드로 프로그램명, 테마 출력 api
 - 입력 받은 키워드에 해당하는 지역 정보 조회
-- 해당 지역 정보를 사용하는 관광 정보를 조회해 프로그램 명과 테마 목록 출력
+- 해당 지역 정보를 사용하는 관광 정보를 조회해 지역 코드, 프로그램 명, 테마 목록 출력
 
 #### 6. 프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api
 - 입력 받은 키워드에 해당되는 프로그램 정보들 조회
@@ -132,7 +133,7 @@ start-kakaopay_pretest_2.sh 파일 실행
 | 지역 코드로 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/search | -regionCode : string (`reg_숫자` 형식 엄수) | -ecotourismCode : string <br> -programName : string <br> -theme : string <br> -region : string <br> -programIntro : string <br> -programDetail : string |
 | 개별 등록 | POST | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/register | -programName (not null) : string <br> -theme (not null) : string <br> -region (not null) : string <br> -programIntro : string <br> -programDetail : string | -resultCode : int |
 | 정보 수정 | PUT | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/modify | -ecotourismCode (`ectr_숫자` 형식 엄수. 지역 코드로 조회 api로 확인 가능) : string <br> -programName (not null) : string <br> -theme (not null) : string <br> -region (not null) : string <br> -programIntro : string <br> -programDetail : string | -resultCode : int |
-| 서비스 지역으로 프로그램명, 테마 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/summary | -regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) | -resultCode : int <br> -region : string <br> -programName : string <br> -theme : string |
+| 서비스 지역으로 지역 코드, 프로그램명, 테마 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/summary | -regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) | -resultCode : int <br> -regionCode : string <br> -programName : string <br> -theme : string |
 | 프로그램 소개로 서비스 지역 정보, 갯수 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/frequency | -programIntroKeyword (프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)) : string | -resultCode : int <br> -region : string <br> -count : int |
 | 프로그램 상세 정보로 출현 빈도 수 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/program/frequency | -programDetailKeyword (프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)) : string | -resultCode : int <br> -programDetailKeyword : string <br> -count : int |
 | 프로그램 상세 정보로 출현 빈도 수 조회 | GET | -Authorization : 발급받은 token <br> -transactionId : string | localhost:10080/ecotourism/tour/recommend | -regionKeyword (조회할 지역 키워드. (ex: 평창군, 경기도...)) : string <br> -recommendKeyword : string (검색하고 싶은 키워드 (ex : 국립공원, 체험...)) | -resultCode : int <br> -ecotourismCode : string |

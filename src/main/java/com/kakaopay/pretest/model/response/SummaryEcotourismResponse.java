@@ -37,12 +37,12 @@ public class SummaryEcotourismResponse extends AbstractResponse {
     @Data
     @NoArgsConstructor
     private class SearchResult {
-        private String region;
+        private String regionCode;
         private String programName;
         private String theme;
 
         public SearchResult(Ecotourism ecotourism) {
-            this.region = ecotourism.getRegionList().stream().map(Region::toString).collect(Collectors.joining(SEPARATOR_COMMA));
+            this.regionCode = ecotourism.getRegionList().stream().map(Region::getPublicIdentifyCode).collect(Collectors.joining(SEPARATOR_COMMA));
             this.programName = ecotourism.getProgram().getName();
             this.theme = ecotourism.getThemeList().stream().map(Theme::getName).collect(Collectors.joining(SEPARATOR_COMMA));
         }
