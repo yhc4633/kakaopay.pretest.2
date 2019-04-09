@@ -1,7 +1,7 @@
 package com.kakaopay.pretest.controller;
 
 import com.kakaopay.pretest.model.ResponseHeader;
-import com.kakaopay.pretest.model.request.ModifyEcotourismRequest;
+import com.kakaopay.pretest.model.request.EcotourismRequest;
 import com.kakaopay.pretest.model.response.*;
 import com.kakaopay.pretest.persistence.entity.impl.Ecotourism;
 import com.kakaopay.pretest.service.TourService;
@@ -38,7 +38,7 @@ public class EcotourismController {
         return new RegisterEcotourismFileResponse(new ResponseHeader(transactionId, SUCCESS), failedList);
     }
 
-    @GetMapping(value = "/tour/search", params = {"regionCode"})
+    @GetMapping(value = "/tour/search")
     @ApiOperation(value = "search", notes = "테이터 조회 api")
     public EcotourismResponse search(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                      @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -52,8 +52,8 @@ public class EcotourismController {
     @ApiOperation(value = "register", notes = "테이터 추가 api")
     public ProcessResultResponse register(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                           @RequestHeader(value = AUTHORIZATION) String authorization,
-                                          @RequestBody ModifyEcotourismRequest modifyEcotourismRequest) {
-        int resultCode = ecotourismService.addTour(modifyEcotourismRequest.createTourInfoArr());
+                                          @RequestBody EcotourismRequest ecotourismRequest) {
+        int resultCode = ecotourismService.addTour(ecotourismRequest.createTourInfoArr());
 
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
@@ -62,13 +62,13 @@ public class EcotourismController {
     @ApiOperation(value = "modifyEcotourism", notes = "테이터 수정 api")
     public ProcessResultResponse modifyEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                   @RequestHeader(value = AUTHORIZATION) String authorization,
-                                                  @RequestBody ModifyEcotourismRequest modifyEcotourismRequest) {
-        int resultCode = ecotourismService.modifyTour(modifyEcotourismRequest.createTourInfoArr());
+                                                  @RequestBody EcotourismRequest ecotourismRequest) {
+        int resultCode = ecotourismService.modifyTour(ecotourismRequest.createTourInfoArr());
 
         return new ProcessResultResponse(new ResponseHeader(transactionId, SUCCESS), resultCode);
     }
 
-    @GetMapping(value = "/tour/summary", params = {"regionKeyword"})
+    @GetMapping(value = "/tour/summary")
     @ApiOperation(value = "searchSummary", notes = "서비스 지역 키워드로 프로그램명, 테마 출력 api")
     public SummaryEcotourismResponse searchSummary(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                    @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -78,7 +78,7 @@ public class EcotourismController {
         return new SummaryEcotourismResponse(new ResponseHeader(transactionId, SUCCESS), ecotourismList);
     }
 
-    @GetMapping(value = "/tour/frequency", params = {"programIntroKeyword"})
+    @GetMapping(value = "/tour/frequency")
     @ApiOperation(value = "searchRegionFrequency", notes = "프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api")
     public FrequentEcotourismRegionResponse searchRegionFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                   @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -88,7 +88,7 @@ public class EcotourismController {
         return new FrequentEcotourismRegionResponse(new ResponseHeader(transactionId, SUCCESS), programIntroKeyword, ecotourismList);
     }
 
-    @GetMapping(value = "/program/frequency", params = {"programDetailKeyword"})
+    @GetMapping(value = "/program/frequency")
     @ApiOperation(value = "searchProgramDetailFrequency", notes = "프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api")
     public FrequentEcotourismProgramDetailResponse searchProgramDetailFrequency(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                                 @RequestHeader(value = AUTHORIZATION) String authorization,
@@ -98,7 +98,7 @@ public class EcotourismController {
         return new FrequentEcotourismProgramDetailResponse(new ResponseHeader(transactionId, SUCCESS), programDetailKeyword, count);
     }
 
-    @GetMapping(value = "/tour/recommend", params = {"regionKeyword", "recommendKeyword"})
+    @GetMapping(value = "/tour/recommend")
     @ApiOperation(value = "searchRecommendEcotourism", notes = "지역명, 관광 키워드로 추천 프로그램 코드 출력 api")
     public EcotourismRecommendResponse searchRecommendEcotourism(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                                                  @RequestHeader(value = AUTHORIZATION) String authorization,

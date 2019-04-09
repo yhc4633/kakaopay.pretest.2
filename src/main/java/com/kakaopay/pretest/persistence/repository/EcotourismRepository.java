@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface EcotourismRepository extends JpaRepository<Ecotourism, Long> {
-    Ecotourism findEcotourismByRegionListAndThemeListAndProgram(List<Region> regionList, List<Theme> theme, Program program);
+    Ecotourism findEcotourismByRegionListInAndThemeListInAndProgram(List<Region> regionList, List<Theme> theme, Program program);
     List<Ecotourism> findAllByRegionListIn(List<Region> regionList);
     List<Ecotourism> findAllByProgram(Program program);
     List<Ecotourism> findAllByThemeListIn(List<Theme> themeList);

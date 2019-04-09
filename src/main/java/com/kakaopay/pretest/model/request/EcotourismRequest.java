@@ -4,7 +4,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 @Data
-public class ModifyEcotourismRequest {
+public class EcotourismRequest {
     private String ecotourismCode;
     private String programName;
     private String theme;

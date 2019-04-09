@@ -32,6 +32,16 @@ Ecotourism_Theme
 2. Ecotourism : Theme = N : N
 3. Ecotourism : Program = N : 1
 
+- 응답 코드
+
+| Code | State |
+|:---|:---|
+| 0 | SUCCESS |
+| 1 | FAIL |
+| 5001 | ERROR_WRONG_PARAMETER |
+| 10001 | ERROR_NO_DATA |
+| 10002 | ERROR_EXIST_FAILED_DATA |
+
 ### 2) API 개발
 #### 1. 데이터 파일을 통해 저장 api
 - 파일 row를 지역, 테마, 프로그램으로 분류 해 저장
@@ -92,75 +102,26 @@ Ecotourism_Theme
 #### 헤더 정보
 > Content-Type : application/json
 
-#### 1. 데이터 파일을 통해 저장 api
-##### URL
-> POST<br>
-> localhost:10080/ecotourism/file/register
+#### 인증 api
+> 생태 관광 api 사용 전 반드시 토큰을 발급 받아 header에 사용해야 합니다
 
-##### Parameter
-> ecotourismFile : multipart form data 형식으로 전달할 csv 파일
-#### 2. 테이터 조회 api
-##### URL
-> GET<br>
-> localhost:10080/ecotourism/tour/search
+| Desc | Method | Header | Url | Parameter | Result |
+|:---:|:---:|:---|:---|:---|:---|
+| 가입 및 토큰 발급 | POST | transactionId : string | localhost:10080/certify/signup | id : string <br> password : string | token : string |
+| 로그인 및 토큰 발급 | POST | transactionId : string | localhost:10080/certify/signin | id : string <br> password : string | token : string |
+| 토큰 재발급 | PUT | Authorization : 'Bearer Token'<br> token : string <br> transactionId : string | localhost:10080/certify/refresh | | token : string |
 
-##### Parameter
-> regionCode : 지역 코드. `reg_숫자` 형식 엄수.
-#### 3. 테이터 추가 api
-##### URL
-> POST<br>
-> localhost:10080/ecotourism/tour/register
+#### 생태 관광 api
 
-##### Parameter
-> programName : 프로그램 명. 빈 값이 오면 안됩니다.<br>
-> theme : 테마 명. 빈 값이 오면 안됩니다.<br>
-> region : 지역 명. 빈 값이 오면 안됩니다.<br>
-> programIntro : 프로그램 소개<br>
-> programDetail : 프로그램 상세정보<br>
-#### 4. 테이터 수정 api
-##### URL
-> PUT<br>
-> localhost:10080/ecotourism/tour/modify
+| Desc | Method | Header | Url | Parameter | Result |
+|:---:|:---:|:---|:---|:---|:---|
+| csv 파일 저장 | POST | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/file/register | ecotourismFile : multipart form data 형식으로 전달할 csv 파일 | resultCode : int |
+| 지역 코드로 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/search | regionCode : string (`reg_숫자` 형식 엄수) | ecotourismCode : string <br> programName : string <br> theme : string <br> region : string <br> programIntro : string <br> programDetail : string |
+| 개별 등록 | POST | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/register | programName (not null) : string <br> theme (not null) : string <br> region (not null) : string <br> programIntro : string <br> programDetail : string | resultCode : int |
+| 정보 수정 | PUT | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/modify | ecotourismCode (`ectr_숫자` 형식 엄수. 지역 코드로 조회 api로 확인 가능) : string ( <br> programName (not null) : string <br> theme (not null) : string <br> region (not null) : string <br> programIntro : string <br> programDetail : string | resultCode : int |
+| 서비스 지역으로 프로그램명, 테마 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/summary | regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) | resultCode : int <br> region : string <br> programName : string <br> theme : string |
+| 프로그램 소개로 서비스 지역 정보, 갯수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/frequency | programIntroKeyword : string (프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)) | resultCode : int <br> region : string <br> count : int |
+| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/program/frequency | programDetailKeyword : string (프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)) | resultCode : int <br> programDetailKeyword : string <br> count : int |
+| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/recommend | regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) <br> recommendKeyword : string (검색하고 싶은 키워드 (ex : 국립공원, 체험...)) | resultCode : int <br> ecotourismCode : string |
 
-##### Parameter
-> ecotourismCode : 생태 관광 코드. `ectr_숫자` 형식 엄수. 조회 api로 확인 가능.<br>
-> programName : 프로그램 명. 빈 값이 오면 안됩니다.<br>
-> theme : 테마 명. 빈 값이 오면 안됩니다.<br>
-> region : 지역 명. 빈 값이 오면 안됩니다.<br>
-> programIntro : 프로그램 소개<br>
-> programDetail : 프로그램 상세정보<br>
-
-#### 5. 서비스 지역 키워드로 프로그램명, 테마 출력 api
-##### URL
-> GET<br>
-> localhost:10080/ecotourism/tour/summary
-
-##### Parameter
-> regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...)
-
-#### 6. 프로그램 소개 키워드로 서비스 지역 정보, 개수 출력 api
-##### URL
-> GET<br>
-> localhost:10080/ecotourism/tour/frequency
-
-##### Parameter
-> programIntroKeyword : 프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)
-
-#### 7. 프로그램 상세 정보 키워드로 키워드의 출현 빈도 수 출력 api
-##### URL
-> GET<br>
-> localhost:10080/ecotourism/program/frequency
-
-##### Parameter
-> programDetailKeyword : 프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)
-
-#### 8. 지역명, 관광 키워드로 추천 프로그램 코드 출력 api
-##### URL
-> GET<br>
-> localhost:10080/ecotourism/tour/recommend
-
-##### Parameter
-> regionKeyword : 조회할 지역 키워드. (ex: 평창군, 경기도...) <br>
-> recommendKeyword : 검색하고 싶은 키워드 (ex : 국립공원, 체험...)
-
-#### ※ 간편한 조회가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다.
+#### ※ 간편한 테스트가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다.

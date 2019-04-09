@@ -48,7 +48,7 @@ public class CertificationController {
     public SignResponse refresh(@RequestHeader(value = TRANSACTION_ID, required = false, defaultValue = "0") String transactionId,
                                 @RequestHeader(value = AUTHORIZATION) String authorization,
                                 @RequestHeader(value = TOKEN) String token) {
-        String refreshToken = StringUtils.equals(authorization, "Bearer Token") ? jwtCertificationService.refresh(token) : null;
+        String refreshToken = StringUtils.equals(authorization, BEARER_TOKEN) ? jwtCertificationService.refresh(token) : null;
 
         return new SignResponse(new ResponseHeader(transactionId, SUCCESS), refreshToken);
     }
