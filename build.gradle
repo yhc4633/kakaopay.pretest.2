@@ -109,7 +109,7 @@ compileJava.doLast {
     def script = file("${buildDir}/libs")
 
     script.mkdirs()
-    def shScript = new File(script, "start-kakaopay_prestest_2.sh")
+    def shScript = new File(script, "start-kakaopay_pretest_2.sh")
 
     shScript.text = "exec -a ${rootProject.name} java -d64 -server ${logbackPath} ${encoding} ${jmx} ${gc} ${gclog} ${heapdump} ${memory} ${activeProfile} -jar ${rootProject.name}.jar"
 
@@ -119,7 +119,7 @@ compileJava.doLast {
     copy {
         from "${resourceDir}/logging/logback-${profile.split(',')[0]}.xml"
         into "build/libs"
-        jar.manifest.writeTo("${buildDir}/libs/${profile}-kakaopay_prestest_2-${rootProject.version}.MF")
+        jar.manifest.writeTo("${buildDir}/libs/${profile}-kakaopay_pretest_2-${rootProject.version}.MF")
     }
 }
 

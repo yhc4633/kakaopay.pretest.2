@@ -87,16 +87,29 @@ Ecotourism_Theme
 
 #### 하위 정보 추가 후 빌드 및 서버 실행
 <pre><code>
+<빌드>
 [local build 시]
  Arguments
  -Pprofile=local
  
+<실행>
 [local 실행 시]
  VM Options
  -Dspring.profiles.active=local
  
  Program Arguments
  --spring.profiles.active=local
+ 
+ 설정 추가 후 spring boot 설정으로 실행
+ 
+[jar 실행 시]
+local 빌드 후 build\lib 의 파일들을 같은 위치에 두고
+
+kakaopay_pretest_2.jar
+logback-local.xml
+start-kakaopay_pretest_2.sh
+
+start-kakaopay_pretest_2.sh 파일 실행
 </code></pre>
 
 #### 헤더 정보
