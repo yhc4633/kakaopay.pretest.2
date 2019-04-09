@@ -33,20 +33,28 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
-    compile('org.springframework.boot:spring-boot-starter:1.5.15.RELEASE') {
+    compile('org.springframework.boot:spring-boot-starter:1.5.19.RELEASE') {
         exclude(module: 'commons-logging')
     }
 
     // spring module
-    compile 'org.springframework.boot:spring-boot-starter-web:1.5.15.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-aop:1.5.15.RELEASE'
-    compile 'org.springframework.boot:spring-boot-configuration-processor:1.5.15.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.15.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.5.19.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-aop:1.5.19.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-test:1.5.19.RELEASE'
+    compile 'org.springframework.boot:spring-boot-configuration-processor:1.5.19.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.19.RELEASE'
 
     // etc module
-    compile 'org.projectlombok:lombok:1.18.2'
+    compile 'org.projectlombok:lombok:1.18.4'
     compile 'ch.qos.logback:logback-classic:1.1.8'
     compile 'ch.qos.logback:logback-core:1.1.8'
+    compile 'com.h2database:h2:1.4.199'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'commons-io:commons-io:2.5'
+    compile 'com.opencsv:opencsv:4.4'
+    compile 'io.springfox:springfox-swagger2:2.9.2'
+    compile 'io.springfox:springfox-swagger-ui:2.9.2'
+    compile 'io.jsonwebtoken:jjwt:0.7.0'
 }
 
 buildscript {
@@ -54,7 +62,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.15.RELEASE"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.5.19.RELEASE"
     }
 }
 
@@ -101,7 +109,7 @@ compileJava.doLast {
     def script = file("${buildDir}/libs")
 
     script.mkdirs()
-    def shScript = new File(script, "start-kakaopay_prestest_2.sh")
+    def shScript = new File(script, "start-kakaopay_pretest_2.sh")
 
     shScript.text = "exec -a ${rootProject.name} java -d64 -server ${logbackPath} ${encoding} ${jmx} ${gc} ${gclog} ${heapdump} ${memory} ${activeProfile} -jar ${rootProject.name}.jar"
 
@@ -111,7 +119,7 @@ compileJava.doLast {
     copy {
         from "${resourceDir}/logging/logback-${profile.split(',')[0]}.xml"
         into "build/libs"
-        jar.manifest.writeTo("${buildDir}/libs/${profile}-kakaopay_prestest_2-${rootProject.version}.MF")
+        jar.manifest.writeTo("${buildDir}/libs/${profile}-kakaopay_pretest_2-${rootProject.version}.MF")
     }
 }
 

@@ -3,3 +3,17 @@ server:
   server-header: Local Kakaopay Pretest 2 Server
   filter:
     cors: true
+
+logging:
+  config: classpath:logging/logback-local.xml
+
+  h2:
+    console:
+      enabled: true
+
+spring:
+  h2:
+    console:
+      enabled: true
+  profiles:
+    active: local
