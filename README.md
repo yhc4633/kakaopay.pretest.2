@@ -107,21 +107,21 @@ Ecotourism_Theme
 
 | Desc | Method | Header | Url | Parameter | Result |
 |:---:|:---:|:---|:---|:---|:---|
-| 가입 및 토큰 발급 | POST | transactionId : string | localhost:10080/certify/signup | id : string <br> password : string | token : string |
-| 로그인 및 토큰 발급 | POST | transactionId : string | localhost:10080/certify/signin | id : string <br> password : string | token : string |
-| 토큰 재발급 | PUT | Authorization : 'Bearer Token'<br> token : string <br> transactionId : string | localhost:10080/certify/refresh | | token : string |
+| 가입 및 토큰 발급 | POST | - transactionId : string | localhost:10080/certify/signup | - id : string <br> - password : string | - token : string |
+| 로그인 및 토큰 발급 | POST | - transactionId : string | localhost:10080/certify/signin | - id : string <br> - password : string | - token : string |
+| 토큰 재발급 | PUT | - Authorization : 'Bearer Token'<br> - token : string <br> - transactionId : string | localhost:10080/certify/refresh | | - token : string |
 
 #### 생태 관광 api
 
 | Desc | Method | Header | Url | Parameter | Result |
 |:---:|:---:|:---|:---|:---|:---|
-| csv 파일 저장 | POST | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/file/register | ecotourismFile : multipart form data 형식으로 전달할 csv 파일 | resultCode : int |
-| 지역 코드로 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/search | regionCode : string (`reg_숫자` 형식 엄수) | ecotourismCode : string <br> programName : string <br> theme : string <br> region : string <br> programIntro : string <br> programDetail : string |
-| 개별 등록 | POST | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/register | programName (not null) : string <br> theme (not null) : string <br> region (not null) : string <br> programIntro : string <br> programDetail : string | resultCode : int |
-| 정보 수정 | PUT | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/modify | ecotourismCode (`ectr_숫자` 형식 엄수. 지역 코드로 조회 api로 확인 가능) : string ( <br> programName (not null) : string <br> theme (not null) : string <br> region (not null) : string <br> programIntro : string <br> programDetail : string | resultCode : int |
-| 서비스 지역으로 프로그램명, 테마 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/summary | regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) | resultCode : int <br> region : string <br> programName : string <br> theme : string |
-| 프로그램 소개로 서비스 지역 정보, 갯수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/frequency | programIntroKeyword : string (프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)) | resultCode : int <br> region : string <br> count : int |
-| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/program/frequency | programDetailKeyword : string (프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)) | resultCode : int <br> programDetailKeyword : string <br> count : int |
-| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | Authorization : 발급받은 token <br> transactionId : string | localhost:10080/ecotourism/tour/recommend | regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) <br> recommendKeyword : string (검색하고 싶은 키워드 (ex : 국립공원, 체험...)) | resultCode : int <br> ecotourismCode : string |
+| csv 파일 저장 | POST | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/file/register | - ecotourismFile : multipart form data 형식으로 전달할 csv 파일 | - resultCode : int |
+| 지역 코드로 조회 | GET | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/search | - regionCode : string (`reg_숫자` 형식 엄수) | - ecotourismCode : string <br> - programName : string <br> - theme : string <br> - region : string <br> - programIntro : string <br> - programDetail : string |
+| 개별 등록 | POST | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/register | - programName (not null) : string <br> - theme (not null) : string <br> - region (not null) : string <br> - programIntro : string <br> - programDetail : string | - resultCode : int |
+| 정보 수정 | PUT | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/modify | - ecotourismCode (`ectr_숫자` 형식 엄수. 지역 코드로 조회 api로 확인 가능) : string <br> - programName (not null) : string <br> - theme (not null) : string <br> - region (not null) : string <br> - programIntro : string <br> - programDetail : string | - resultCode : int |
+| 서비스 지역으로 프로그램명, 테마 조회 | GET | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/summary | - regionKeyword : string (조회할 지역 키워드. (ex: 평창군, 경기도...)) | - resultCode : int <br> - region : string <br> - programName : string <br> - theme : string |
+| 프로그램 소개로 서비스 지역 정보, 갯수 조회 | GET | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/frequency | - programIntroKeyword (프로그램 소개 키워드. (ex: 세계문화유산, 국립공원...)) : string | - resultCode : int <br> - region : string <br> - count : int |
+| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/program/frequency | - programDetailKeyword (프로그램 상세 정보 키워드. (ex: 문화, 한산대첩...)) : string | - resultCode : int <br> - programDetailKeyword : string <br> - count : int |
+| 프로그램 상세 정보로 출현 빈도 수 조회 | GET | - Authorization : 발급받은 token <br> - transactionId : string | localhost:10080/ecotourism/tour/recommend | - regionKeyword (조회할 지역 키워드. (ex: 평창군, 경기도...)) : string <br> - recommendKeyword : string (검색하고 싶은 키워드 (ex : 국립공원, 체험...)) | - resultCode : int <br> - ecotourismCode : string |
 
 #### ※ 간편한 테스트가 필요 할 시 서버 실행 후 http://localhost:10080/swagger-ui.html 를 이용 할 수 있습니다.
