@@ -40,6 +40,7 @@ public class JwtCertificationServiceImplTest {
         String token = jwtCertificationService.signUp(id, password);
 
         assertNotNull(token);
+        assertNotNull(jwtCertificationService.getClaims(token));
     }
 
     @Test
@@ -49,6 +50,8 @@ public class JwtCertificationServiceImplTest {
         String loginToken = jwtCertificationService.signIn(id, password);
 
         assertNotEquals(originToken, loginToken);
+        assertNotNull(jwtCertificationService.getClaims(originToken));
+        assertNotNull(jwtCertificationService.getClaims(loginToken));
     }
 
     @Test
@@ -58,5 +61,7 @@ public class JwtCertificationServiceImplTest {
         String refreshToken = jwtCertificationService.refresh(originToken);
 
         assertNotEquals(originToken, refreshToken);
+        assertNotNull(jwtCertificationService.getClaims(originToken));
+        assertNotNull(jwtCertificationService.getClaims(refreshToken));
     }
 }
